@@ -1,0 +1,284 @@
+[14-Oct-2025 18:13:00 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[14-Oct-2025 18:13:00 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[15-Oct-2025 00:16:34 Asia/Colombo] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/add-purchase.php on line 150
+[15-Oct-2025 00:16:34 Asia/Colombo] PHP Notice:  Undefined index: supplier_id in /home/stockweb/store.stock.web.lk/admin/add-purchase.php on line 100
+[15-Oct-2025 00:16:52 Asia/Colombo] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/add-purchase.php on line 150
+[15-Oct-2025 00:16:52 Asia/Colombo] PHP Notice:  Undefined index: supplier_id in /home/stockweb/store.stock.web.lk/admin/add-purchase.php on line 100
+[14-Oct-2025 18:47:06 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[14-Oct-2025 18:48:58 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[14-Oct-2025 18:49:00 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[14-Oct-2025 18:49:59 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[14-Oct-2025 18:50:04 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[15-Oct-2025 00:20:16 Asia/Colombo] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/add-purchase.php on line 150
+[15-Oct-2025 00:20:16 Asia/Colombo] PHP Notice:  Undefined index: supplier_id in /home/stockweb/store.stock.web.lk/admin/add-purchase.php on line 100
+[15-Oct-2025 00:20:26 Asia/Colombo] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/add-purchase.php on line 150
+[15-Oct-2025 00:20:26 Asia/Colombo] PHP Notice:  Undefined index: supplier_id in /home/stockweb/store.stock.web.lk/admin/add-purchase.php on line 100
+[14-Oct-2025 18:50:26 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[14-Oct-2025 18:51:02 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[15-Oct-2025 00:35:40 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[15-Oct-2025 00:35:40 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[15-Oct-2025 00:35:41 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[15-Oct-2025 00:35:41 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[15-Oct-2025 00:35:42 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[15-Oct-2025 00:35:42 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[15-Oct-2025 00:36:06 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[15-Oct-2025 00:36:06 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[15-Oct-2025 00:37:15 UTC] PHP Notice:  Undefined variable: mode_output in /home/stockweb/store.stock.web.lk/admin/POS.php on line 137
+[18-Oct-2025 10:49:35 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[18-Oct-2025 10:49:35 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[18-Oct-2025 10:55:07 UTC] PHP Notice:  Undefined variable: mode_output in /home/stockweb/store.stock.web.lk/admin/POS.php on line 137
+[18-Oct-2025 11:07:56 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 17:10:20 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[23-Oct-2025 17:10:20 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[23-Oct-2025 22:51:16 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 48
+[23-Oct-2025 22:51:16 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 32
+[23-Oct-2025 22:51:16 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 14
+[23-Oct-2025 22:51:16 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 65
+[23-Oct-2025 22:51:16 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 13
+[23-Oct-2025 22:51:16 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 23
+[23-Oct-2025 22:51:16 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 32
+[23-Oct-2025 17:28:38 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[23-Oct-2025 17:28:38 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[23-Oct-2025 17:41:50 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/manage-customer.php on line 23
+[23-Oct-2025 17:41:53 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/manage-customer.php on line 23
+[23-Oct-2025 17:41:56 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/manage-customer.php on line 23
+[23-Oct-2025 17:43:04 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 17:43:42 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 62
+[23-Oct-2025 17:43:42 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 63
+[23-Oct-2025 17:43:42 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 64
+[23-Oct-2025 17:43:42 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 65
+[23-Oct-2025 17:43:42 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 86
+[23-Oct-2025 17:43:42 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 87
+[23-Oct-2025 17:43:42 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 88
+[23-Oct-2025 17:43:42 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 89
+[23-Oct-2025 17:57:39 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[23-Oct-2025 17:57:39 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[23-Oct-2025 17:57:39 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[23-Oct-2025 17:57:39 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[23-Oct-2025 18:02:14 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:02:18 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:02:35 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:03:57 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:04:06 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:04:46 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:04:50 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:05:00 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:05:01 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:05:10 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:05:10 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:06:07 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:06:18 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:07:06 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:07:19 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:07:31 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:08:07 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 18:25:44 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[23-Oct-2025 18:25:44 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[23-Oct-2025 23:58:25 Asia/Colombo] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/add-purchase.php on line 150
+[23-Oct-2025 23:58:25 Asia/Colombo] PHP Notice:  Undefined index: supplier_id in /home/stockweb/store.stock.web.lk/admin/add-purchase.php on line 100
+[23-Oct-2025 18:28:49 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 23:26:16 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[23-Oct-2025 23:26:16 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[23-Oct-2025 23:34:49 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[23-Oct-2025 23:48:47 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[23-Oct-2025 23:48:47 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[23-Oct-2025 23:48:47 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[23-Oct-2025 23:48:47 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[23-Oct-2025 23:48:47 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[23-Oct-2025 23:56:47 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[23-Oct-2025 23:56:47 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[24-Oct-2025 00:02:57 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:02:57 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:02:57 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:02:57 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:02:57 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:04:02 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[24-Oct-2025 00:06:35 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[24-Oct-2025 00:08:12 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:08:12 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:08:12 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:08:12 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:08:12 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 05:47:09 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 48
+[24-Oct-2025 05:47:09 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 32
+[24-Oct-2025 05:47:09 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 14
+[24-Oct-2025 05:47:09 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 65
+[24-Oct-2025 05:47:09 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 13
+[24-Oct-2025 05:47:09 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 23
+[24-Oct-2025 05:47:09 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 32
+[24-Oct-2025 00:18:09 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:18:09 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:18:09 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:18:09 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:18:09 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 05:48:47 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 48
+[24-Oct-2025 05:48:47 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 32
+[24-Oct-2025 05:48:47 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 14
+[24-Oct-2025 05:48:47 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 65
+[24-Oct-2025 05:48:47 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 13
+[24-Oct-2025 05:48:47 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 23
+[24-Oct-2025 05:48:47 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 32
+[24-Oct-2025 05:50:20 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 13
+[24-Oct-2025 05:50:20 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 23
+[24-Oct-2025 05:50:20 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 32
+[24-Oct-2025 05:50:20 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 48
+[24-Oct-2025 05:50:20 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 32
+[24-Oct-2025 05:50:20 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 14
+[24-Oct-2025 05:50:20 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 65
+[24-Oct-2025 00:21:39 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:21:39 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:21:39 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:21:39 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:21:39 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:23:02 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 62
+[24-Oct-2025 00:23:02 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 63
+[24-Oct-2025 00:23:02 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 64
+[24-Oct-2025 00:23:02 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 65
+[24-Oct-2025 00:23:02 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 86
+[24-Oct-2025 00:23:02 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 87
+[24-Oct-2025 00:23:02 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 88
+[24-Oct-2025 00:23:02 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 89
+[24-Oct-2025 00:27:44 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:27:44 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:27:44 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:27:44 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:27:44 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:28:31 UTC] PHP Notice:  Undefined variable: mode_output in /home/stockweb/store.stock.web.lk/admin/POS.php on line 137
+[24-Oct-2025 00:28:53 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:28:53 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:28:53 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:28:53 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 00:28:53 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 07:38:11 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 13
+[24-Oct-2025 07:38:11 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 23
+[24-Oct-2025 07:38:11 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 32
+[24-Oct-2025 07:38:11 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 48
+[24-Oct-2025 07:38:11 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 32
+[24-Oct-2025 07:38:11 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 14
+[24-Oct-2025 07:38:11 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 65
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 13
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 23
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 32
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 48
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 32
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 14
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 65
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 13
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 23
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_order_counts.php on line 32
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 48
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 32
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 14
+[24-Oct-2025 07:38:12 Asia/Colombo] PHP Notice:  Undefined index: location in /home/stockweb/store.stock.web.lk/admin/auto_total_income.php on line 65
+[24-Oct-2025 02:12:29 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:12:29 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:12:29 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:12:29 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:12:29 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:12:56 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[24-Oct-2025 02:17:10 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[24-Oct-2025 02:20:50 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:20:50 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:20:50 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:20:50 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:20:50 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:26:34 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 62
+[24-Oct-2025 02:26:34 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 63
+[24-Oct-2025 02:26:34 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 64
+[24-Oct-2025 02:26:34 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 65
+[24-Oct-2025 02:26:34 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 86
+[24-Oct-2025 02:26:34 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 87
+[24-Oct-2025 02:26:34 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 88
+[24-Oct-2025 02:26:34 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/customer.php on line 89
+[24-Oct-2025 02:37:06 UTC] PHP Notice:  Undefined variable: mode_output in /home/stockweb/store.stock.web.lk/admin/POS.php on line 137
+[24-Oct-2025 02:37:37 UTC] PHP Notice:  Undefined variable: mode_output in /home/stockweb/store.stock.web.lk/admin/POS.php on line 137
+[24-Oct-2025 02:59:32 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[24-Oct-2025 02:59:32 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[24-Oct-2025 02:59:44 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:59:44 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:59:44 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:59:44 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 02:59:44 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[24-Oct-2025 03:01:07 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[24-Oct-2025 03:01:07 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[25-Oct-2025 18:03:32 UTC] PHP Notice:  Undefined variable: db in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[25-Oct-2025 18:03:32 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getRow() on null in /home/stockweb/store.stock.web.lk/admin/common/manubar.php:8
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/admin/index.php(110): include()
+#1 {main}
+  thrown in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 8
+[25-Oct-2025 18:03:50 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[25-Oct-2025 18:03:50 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[25-Oct-2025 18:03:50 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[25-Oct-2025 18:03:50 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[25-Oct-2025 18:03:50 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[25-Oct-2025 18:04:27 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[25-Oct-2025 18:04:27 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[25-Oct-2025 18:04:27 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[25-Oct-2025 18:04:27 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[25-Oct-2025 18:04:27 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/index.php on line 360
+[25-Oct-2025 18:04:42 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[25-Oct-2025 18:05:31 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310
+[26-Oct-2025 00:15:11 UTC] PHP Notice:  Undefined variable: session_user_name in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 38
+[26-Oct-2025 00:15:11 UTC] PHP Notice:  Undefined index: Status in /home/stockweb/store.stock.web.lk/admin/common/manubar.php on line 48
+[26-Oct-2025 00:15:11 UTC] PHP Notice:  Trying to access array offset on value of type bool in /home/stockweb/store.stock.web.lk/admin/edit-product.php on line 310

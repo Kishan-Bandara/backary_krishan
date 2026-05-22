@@ -1,0 +1,19 @@
+{
+    "customer_id": 241,
+    "shipping_address_id": 67,
+    "delivery_amount": 5.00,
+    "repeat_interval": 0,
+    "repeat_unit": null,
+    "items": [
+        {
+            "item_id": 1,
+            "mon_qty": 2,
+            "tue_qty": 0,
+            "wed_qty": 1,
+            "thu_qty": 0,
+            "fri_qty": 2,
+            "sat_qty": 0,
+            "sun_qty": 0
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+[01-Mar-2020 20:48:21 Asia/Colombo] PHP Fatal error:  Call to undefined function currency() in /home/stockweb/morichmall.lk/process/calculationProcess.php on line 86
+[01-Mar-2020 20:48:40 Asia/Colombo] PHP Fatal error:  Call to undefined function currency() in /home/stockweb/morichmall.lk/process/calculationProcess.php on line 86
+[01-Mar-2020 20:48:42 Asia/Colombo] PHP Fatal error:  Call to undefined function currency() in /home/stockweb/morichmall.lk/process/calculationProcess.php on line 86
+[01-Mar-2020 20:48:45 Asia/Colombo] PHP Fatal error:  Call to undefined function currency() in /home/stockweb/morichmall.lk/process/calculationProcess.php on line 86
+[01-Mar-2020 20:48:48 Asia/Colombo] PHP Fatal error:  Call to undefined function currency() in /home/stockweb/morichmall.lk/process/calculationProcess.php on line 86
+[01-Mar-2020 20:52:24 Asia/Colombo] PHP Fatal error:  Call to undefined function currency() in /home/stockweb/morichmall.lk/process/calculationProcess.php on line 86
+[01-Mar-2020 20:54:12 Asia/Colombo] PHP Fatal error:  Call to undefined function currency() in /home/stockweb/morichmall.lk/process/calculationProcess.php on line 86
+[24-Oct-2025 05:03:54 Asia/Colombo] PHP Warning:  A non-numeric value encountered in /home/stockweb/store.stock.web.lk/process/order_process.php on line 214
+[24-Oct-2025 05:15:54 Asia/Colombo] PHP Warning:  Invalid argument supplied for foreach() in /home/stockweb/store.stock.web.lk/process/add-item-session.php on line 144
+[24-Oct-2025 05:15:54 Asia/Colombo] PHP Fatal error:  Uncaught Error: [] operator not supported for strings in /home/stockweb/store.stock.web.lk/process/add-item-session.php:182
+Stack trace:
+#0 {main}
+  thrown in /home/stockweb/store.stock.web.lk/process/add-item-session.php on line 182
+[24-Oct-2025 05:16:02 Asia/Colombo] PHP Warning:  Invalid argument supplied for foreach() in /home/stockweb/store.stock.web.lk/process/add-item-session.php on line 144
+[24-Oct-2025 05:16:02 Asia/Colombo] PHP Fatal error:  Uncaught Error: [] operator not supported for strings in /home/stockweb/store.stock.web.lk/process/add-item-session.php:182
+Stack trace:
+#0 {main}
+  thrown in /home/stockweb/store.stock.web.lk/process/add-item-session.php on line 182

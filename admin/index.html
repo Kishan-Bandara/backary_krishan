@@ -1,0 +1,395 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<title>System Redirect</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r61/three.min.js"></script>
+<style type="text/css">
+canvas {
+  width:100%;
+  height:100%;
+}
+.statusBox {
+    width: 80px;
+}
+.fb {
+    width:43%;
+    float:left;
+    text-align:center;
+    margin:5px 20px 5px 20px;
+    padding:20px 0 20px 0px;
+    background:#eef8fd;
+    height:110px;
+    border:solid 1px #dff4fe;
+}
+.fb2 {
+    width:43%;
+    float:right;
+    text-align:center;
+    margin:5px 20px 5px 20px;
+    padding:20px 0 20px 0px;
+    background:#eef8fd;
+    height:110px;
+    border:solid 1px #dff4fe;
+}
+#opts {
+    width:100%;
+}
+#redirecting {
+    width: 100%;
+    height:100px;
+    text-align:center;
+    padding-top: 50px;
+    font-weight:bold;
+    color:#000;
+    font-size:18px;
+}
+.button {
+    width: 0 auto;
+    margin:5px auto 0 auto;
+    padding:2px;
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+    color:#00566a;
+    width:100px;
+    height:25px;
+    background-color:#4f7ea7;
+}
+.button a {
+    color:#fff;
+    text-decoration:none;
+}
+.container {
+    width:70%;
+    margin-left:auto;
+    margin-right:auto;
+}
+.txtb {
+    padding: 20px;
+}
+body {
+    font-family:arial;
+    margin:0;
+    padding:0;
+    background:url('assets/img/2_DF_2-Q.jpg') repeat-x ;
+    color:#6f6f6f;
+    font-size:12px;
+}
+a {
+    color:#0075a9;
+}
+* {
+    margin:0;
+    padding:0;
+}
+#pageheader {
+  
+    height:63px;
+    color:#fff;
+    padding:20px;
+    font-size:28px;
+    font-family:century gothic, arial;letter-spacing:-0.5px;
+}
+p {
+    margin:10px 15px 15px 50px;
+}
+#wrap {
+    margin:50px auto 20px auto;
+    width:906px;
+}
+.msg {
+    background:url('data:') no-repeat;
+    min-height:206px;
+    color:#000;
+    font-size:16px;
+    padding:25px;
+}
+* html .msg {
+    height:206px;
+}
+.msg p {
+    border:none;
+    margin:0 0 10px 0;
+}
+.msg ul {
+    margin:15px 15px 0 15px;
+}
+li {
+    margin:10px 0;
+}
+.note {
+    font-style:italic;
+    border-bottom:1px solid #cae0e5;
+    border-top:1px solid #cae0e5;
+    padding:15px 0;
+    margin-right:50px;
+}
+#contactinfo, .contactinfo {
+    padding:5px 0;
+}
+#contactinfo li, .contactinfo li {
+    float:left;
+    padding:5px;
+    width:250px;
+    list-style:none;
+    font-size:14px;
+}
+p.troubleshoot {
+    font-style:italic;
+    border:dashed 1px #dfe9ed;
+    padding:5px;
+    margin:10px 0 0 0;
+}
+#connectmethod {
+  float:right;
+}
+#connectmsg {
+  float:left;
+}
+</style>
+</head>
+<body>
+
+
+<div id="pageheader">
+  <div id="connectmsg"><span id="actor">Connection Selection </span><span id="statusBox" style="display:inline;"> ....</span></div>
+  <div id="connectmethod">trying: <span id="connectmethodname">preferred</span></div>
+</div>
+<div id="wrap">
+  <div class="msg">
+    <div id="nofirewall" class="fb">
+      <div class="txtb"> <pre>System redirecting....</pre></div>
+     
+    </div>
+   
+  </div>
+</div>
+
+<script type="text/javascript">
+
+var counter = 0;
+var poll_counter = 0;
+var statusBoxEl = document.getElementById('statusBox');
+var connectmethodEl = document.getElementById('connectmethodname');
+
+var searchiFrames = {
+  'preferredMethod':{
+    'available': 1,
+    'active': 1,
+    'name': 'preferred',
+    'timeout': 6,
+    'element': document.getElementById('preferredMethod'),
+   
+    'redirect_url': "https:\/\/morichmall.lk/admin/index.php" 
+  },
+  'proxyMethod':{
+    'available': 1,
+    'active': 0,
+    'name': 'proxy',
+    'timeout': 6,
+    'element': document.getElementById('proxyMethod'),
+ 
+    'redirect_url': "https:\/\/morichmall.lk/admin/index.php"
+  },
+  'nonsecureMethod':{
+    'available': 1,
+    'active': 0,
+    'name': 'nonsecure',
+    'timeout': 6,
+    'element': document.getElementById('nonsecureMethod'),
+    
+    'redirect_url': "https:\/\/morichmall.lk/admin/index.php"
+  },
+  'nonsecureProxyMethod':{
+    'available': 1,
+    'active': 0,
+    'name': 'nonsecure proxy',
+    'timeout': 6,
+    'element': document.getElementById('nonsecureProxyMethod'),
+   
+    'redirect_url': "https:\/\/morichmall.lk/admin/index.php"
+  }
+};
+
+
+if (searchiFrames['preferredMethod'].test_url === searchiFrames['nonsecureMethod'].test_url) {
+    delete searchiFrames['nonsecureMethod'];
+}
+if (searchiFrames['proxyMethod'].test_url === searchiFrames['nonsecureProxyMethod'].test_url) {
+    delete searchiFrames['nonsecureProxyMethod'];
+}
+
+
+
+function poll_iframes() {
+  poll_counter++;
+
+  var methods_checked = 0;
+  for (var searchmethod in searchiFrames) {
+    if (searchiFrames.hasOwnProperty(searchmethod)) {
+      if (searchiFrames[searchmethod].available) {
+        methods_checked++;
+
+        if (searchiFrames[searchmethod].active === 0) {
+          // show the user how we are trying to connect
+          connectmethodEl.innerHTML=searchiFrames[searchmethod].name;
+
+          searchiFrames[searchmethod].active = 1;
+          searchiFrames[searchmethod].element.src = searchiFrames[searchmethod].test_url;
+        }
+
+        var check_result = checkIframeFailed(searchiFrames[searchmethod].element);
+        searchiFrames[searchmethod].timeout--;
+
+        if (check_result.has_cpanel_loader === 1) {
+          window.location.href=searchiFrames[searchmethod].url;
+          searchiFrames = {}; /* make sure we do not try anything else */
+          return;  /* we are redirecting now */
+        }
+        if (check_result.failed === 1 || searchiFrames[searchmethod].timeout <= 0) {
+          searchiFrames[searchmethod].active = 0;
+          searchiFrames[searchmethod].available = 0;
+        } else {
+          return;  /* wait for next check */
+        }
+      }
+    }
+  }
+
+  /* If everything times out, just attempt to redirect to the preferred method */
+  if (methods_checked === 0) {
+    connectmethodEl.innerHTML='force preferred';
+    window.location.href=searchiFrames['preferredMethod'].redirect_url;
+    searchiFrames = {}; /* make sure we do not try anything else */
+  }
+
+}
+
+function checkIframeFailed(iFrameEl) {
+  var iframe_has_cpanel_loader = 0;
+  var iframe_failed = 0;
+
+  var errHtml;
+  try {
+    var iFrameDoc = (iFrameEl.contentDocument || iFrameEl.contentWindow || iFrameEl);
+    if (iFrameDoc.document) { iFrameDoc=iFrameDoc.document; }
+    if (iFrameDoc.innerHTML) { errHtml=iFrameDoc.innerHTML; }
+    if (errHtml) {
+      if ( errHtml.match(/cPanel Loader/))  {
+        iframe_has_cpanel_loader = 1;
+      } else if ( errHtml.match(/(404|connection|not|unavailable)/i)) {
+        iframe_failed = 1;
+      }
+    }
+  } catch (e) {
+    //console.log(e);
+    //console.log(e.message);
+    if (e && e.message && e.message.match(/denied/i)) {
+      iframe_failed = 0;
+    } else {
+      iframe_failed = 1;
+    }
+  }
+
+  return {'failed':iframe_failed, 'has_cpanel_loader':iframe_has_cpanel_loader};
+}
+
+function updatecount() {
+  var dots='';
+  counter++;
+  if (counter == 15) { counter=0; }
+  for(i=0;i<=counter;i++) {
+    dots+='.';
+  }
+  statusBoxEl.innerHTML=dots;
+}
+
+var actorEl = document.getElementById('actor');
+if (actorEl) { actorEl.innerHTML='<b>System</b> is connecting '; }
+if (! 0) {
+  setInterval(poll_iframes,1000);
+
+  if (statusBoxEl) {
+    setInterval(updatecount,80);
+  }
+}
+
+</script>
+
+<script type="text/javascript">
+
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+var renderer = new THREE.WebGLRenderer();
+
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+
+
+/* Create Lights: PointLight / SpotLight etc.*/
+var spotLight = new THREE.SpotLight(0xffffff);
+spotLight.position.set(100,100,100);
+spotLight.castShadow = true; //If set to true light will cast dynamic shadows. Warning: This is expensive and requires tweaking to get shadows looking right.
+spotLight.shadowMapWidth = 1024;
+spotLight.shadowMapHeight = 1024;
+spotLight.shadowCameraNear = 500;
+spotLight.shadowCameraFar = 4000;
+spotLight.shadowCameraFov = 30;
+scene.add(spotLight);
+
+/* Create Material */
+function Mat(){
+  var material = new THREE.MeshPhongMaterial({
+    color      : new THREE.Color("rgb(35,35,213)"),  //Diffuse color of the material
+    emissive   : new THREE.Color("rgb(64,128,255)"), //Emissive(light) color of the material, essentially a solid color unaffected by other lighting. Default is black.
+    specular   : new THREE.Color("rgb(93,195,255)"), /*Specular color of the material, i.e., how shiny the material is and the color of its shine. 
+                                                       Setting this the same color as the diffuse value (times some intensity) makes the material more metallic-looking; 
+                                                       setting this to some gray makes the material look more plastic. Default is dark gray.*/
+    shininess  : 1,                                  //How shiny the specular highlight is; a higher value gives a sharper highlight. Default is 30.
+    shading    : THREE.FlatShading,                  //How the triangles of a curved surface are rendered: THREE.SmoothShading, THREE.FlatShading, THREE.NoShading
+    wireframe  : 1,                                  //THREE.Math.randInt(0,1)
+    transparent: 1,
+    opacity    : 0.15                                //THREE.Math.randFloat(0,1) 
+  });
+  return material;
+}
+
+/* Create Geometry */
+var geometry = new THREE.SphereGeometry(50,20,20,0,Math.PI*2,0,Math.PI);
+//SphereGeometry(radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength)
+
+/* Create Earth Sphere*/
+var earth = new THREE.Mesh(geometry, Mat());
+
+/*
+var numSphere = 30;
+var tabSphere = [];
+for(var i=0: i<numSphere; i++){
+  tabShpere.push(new Sphere(i));
+  scene.add(tabSphere[i].b);
+}
+*/
+
+scene.add(earth);
+
+camera.position.z = 90;
+
+
+
+
+function render(){
+  requestAnimationFrame(render);
+  earth.rotation.x += 0.01;
+  earth.rotation.y += 0.01;
+  renderer.render(scene, camera);
+}
+render();
+
+</script>
+</body>
+
+</html>

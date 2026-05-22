@@ -1,0 +1,13 @@
+{
+    "require": {
+        "phpmailer/phpmailer": "^7.0",
+        "dompdf/dompdf": "^3.1",
+        "phpoffice/phpspreadsheet": "^3.0.0",
+        "maennchen/zipstream-php": "2.1"
+    },
+    "config": {
+        "audit": {
+            "block-insecure": false
+        }
+    }
+}

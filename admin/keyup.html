@@ -1,0 +1,29 @@
+<html>
+<head>
+    <title>keyup event example in JavaScript</title>
+    <script language="Javascript">
+        var res = "";
+       
+        function keyup1(evt, t) {
+            res = res + t.value;
+            document.getElementById("tdresult").innerHTML = res;
+            res = "";
+        }
+ 
+    </script>
+</head>
+<body>
+    <table align="left">
+        <tr>
+            <td>
+                Enter Value :
+                <input type="text" id="Text1" onkeyup="keyup1(event,this);"style="width: 200px;" />
+            </td>
+        </tr>
+        <tr>
+            <td id="tdresult">
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

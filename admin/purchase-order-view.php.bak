@@ -1,0 +1,159 @@
+<?php
+ob_start();
+error_reporting(E_ALL ^ E_NOTICE);
+session_start();
+include('include/database.php');
+include('include/check_login.php');
+include('get_url.php');
+
+$db = new Database();
+$purchaseNoteId = (int) ($_GET['id'] ?? 0);
+$message = $_GET['message'] ?? '';
+$type = $_GET['type'] ?? '';
+
+if ($purchaseNoteId <= 0) {
+    redirect('purchase-order-list.php?message=' . urlencode('Invalid purchase note.') . '&type=error');
+}
+
+$note = $db->getRow('SELECT * FROM purchase_note_header WHERE purchase_note_id = ?', [$purchaseNoteId]);
+if (!$note) {
+    redirect('purchase-order-list.php?message=' . urlencode('Purchase note not found.') . '&type=error');
+}
+
+$supplier = $db->getRow('SELECT supplier_name, supplier_contact_no FROM supplier WHERE supplier_id = ?', [$note['supplier_id']]);
+$location = $db->getRow('SELECT name, phone_no FROM location_master WHERE id = ?', [$note['location_id']]);
+$items = $db->getRows('SELECT pni.*, itm.item_name FROM purchase_note_items pni JOIN item_master itm ON itm.item_id = pni.product_id WHERE pni.purchase_note_id = ?', [$purchaseNoteId]);
+$grns = $db->getRows('SELECT grn_h_id, grn_h_code, grn_h_date FROM grn_hedder WHERE purchase_note_id = ? ORDER BY grn_h_id DESC', [$purchaseNoteId]);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Purchase Note Details</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <?php include('common/head.php'); ?>
+</head>
+<body class="page-sidebar-closed-hide-logo page-content-white">
+<?php include('common/manubar.php'); ?>
+<div class="clearfix"> </div>
+<div class="page-container">
+    <div class="page-sidebar-wrapper">
+        <?php include('common/sidebar.php'); ?>
+    </div>
+    <div class="page-content-wrapper">
+        <div class="page-content">
+            <div class="page-bar">
+                <ul class="page-breadcrumb">
+                    <li>
+                        <a>Purchase</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        <a>Purchase Note Details</a>
+                    </li>
+                </ul>
+            </div>
+            <?php if (!empty($message)) { ?>
+                <div class="alert <?php echo ($type === 'error') ? 'alert-danger' : 'alert-success'; ?> alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+                    <?php echo htmlspecialchars($message); ?>
+                </div>
+            <?php } ?>
+            <h3 class="page-title">Purchase Note Details</h3>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="portlet light bordered">
+                        <div class="portlet-title">
+                            <div class="actions">
+                                <?php if ($note['status'] !== 'COMPLETED') { ?>
+                                    <a href="grn-create.php?purchase_note_id=<?php echo $purchaseNoteId; ?>" class="btn btn-sm green">Create GRN</a>
+                                <?php } ?>
+                                <a href="purchase-order-list.php" class="btn btn-sm default">Back to List</a>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="row">
+                                <div class="col-md-4"><strong>Purchase Note Code:</strong> <?php echo $note['purchase_note_code']; ?></div>
+                                <div class="col-md-4"><strong>Date:</strong> <?php echo $note['purchase_date']; ?></div>
+                                <div class="col-md-4"><strong>Status:</strong> <?php echo $note['status']; ?></div>
+                            </div>
+                            <div class="row" style="margin-top: 10px;">
+                                <div class="col-md-4"><strong>Supplier:</strong> <?php echo $supplier['supplier_name'] ?? ''; ?></div>
+                                <div class="col-md-4"><strong>Supplier Phone:</strong> <?php echo $supplier['supplier_contact_no'] ?? ''; ?></div>
+                                <div class="col-md-4"><strong>Location:</strong> <?php echo $location['name'] ?? ''; ?></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="portlet light bordered">
+                        <div class="portlet-title">
+                            <div class="caption">Items</div>
+                        </div>
+                        <div class="portlet-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Requested Qty</th>
+                                    <th>Total Received Qty</th>
+                                    <th>Balance Qty</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($items as $item) { ?>
+                                    <tr>
+                                        <td><?php echo $item['item_name']; ?></td>
+                                        <td><?php echo $item['requested_qty']; ?></td>
+                                        <td><?php echo $item['total_received_qty']; ?></td>
+                                        <td><?php echo $item['balance_qty']; ?></td>
+                                    </tr>
+                                <?php } ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="portlet light bordered">
+                        <div class="portlet-title">
+                            <div class="caption">Related GRNs</div>
+                        </div>
+                        <div class="portlet-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>GRN Code</th>
+                                    <th>GRN Date</th>
+                                    <th>View</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php if (count($grns) === 0) { ?>
+                                    <tr>
+                                        <td colspan="3">No GRNs created yet.</td>
+                                    </tr>
+                                <?php } else { ?>
+                                    <?php foreach ($grns as $grn) { ?>
+                                        <tr>
+                                            <td><?php echo $grn['grn_h_code']; ?></td>
+                                            <td><?php echo $grn['grn_h_date']; ?></td>
+                                            <td><a href="purchase_note.php?id=<?php echo $grn['grn_h_id']; ?>" class="btn btn-xs btn-default"><i class="fa fa-eye"></i></a></td>
+                                        </tr>
+                                    <?php } ?>
+                                <?php } ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

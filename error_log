@@ -1,0 +1,44 @@
+[14-Oct-2025 18:09:49 UTC] PHP Fatal error:  Uncaught Exception: SQLSTATE[HY000] [1045] Access denied for user 'purebeau_purebeautyitaly'@'localhost' (using password: YES) in /home/stockweb/store.stock.web.lk/include/database.php:20
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/include/database.php(127): Database->__construct()
+#1 /home/stockweb/store.stock.web.lk/common/styles.php(12): site_url()
+#2 /home/stockweb/store.stock.web.lk/index.php(123): include('/home/stockweb/...')
+#3 {main}
+  thrown in /home/stockweb/store.stock.web.lk/include/database.php on line 20
+[14-Oct-2025 18:11:19 UTC] PHP Fatal error:  Uncaught Exception: SQLSTATE[HY000] [1045] Access denied for user 'purebeau_purebeautyitaly'@'localhost' (using password: YES) in /home/stockweb/store.stock.web.lk/include/database.php:20
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/include/database.php(127): Database->__construct()
+#1 /home/stockweb/store.stock.web.lk/common/styles.php(12): site_url()
+#2 /home/stockweb/store.stock.web.lk/index.php(123): include('/home/stockweb/...')
+#3 {main}
+  thrown in /home/stockweb/store.stock.web.lk/include/database.php on line 20
+[14-Oct-2025 18:11:20 UTC] PHP Fatal error:  Uncaught Exception: SQLSTATE[HY000] [1045] Access denied for user 'purebeau_purebeautyitaly'@'localhost' (using password: YES) in /home/stockweb/store.stock.web.lk/include/database.php:20
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/include/database.php(127): Database->__construct()
+#1 /home/stockweb/store.stock.web.lk/common/styles.php(12): site_url()
+#2 /home/stockweb/store.stock.web.lk/index.php(123): include('/home/stockweb/...')
+#3 {main}
+  thrown in /home/stockweb/store.stock.web.lk/include/database.php on line 20
+[14-Oct-2025 18:11:20 UTC] PHP Fatal error:  Uncaught Exception: SQLSTATE[HY000] [1045] Access denied for user 'purebeau_purebeautyitaly'@'localhost' (using password: YES) in /home/stockweb/store.stock.web.lk/include/database.php:20
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/include/database.php(127): Database->__construct()
+#1 /home/stockweb/store.stock.web.lk/common/styles.php(12): site_url()
+#2 /home/stockweb/store.stock.web.lk/index.php(123): include('/home/stockweb/...')
+#3 {main}
+  thrown in /home/stockweb/store.stock.web.lk/include/database.php on line 20
+[14-Oct-2025 18:11:20 UTC] PHP Fatal error:  Uncaught Exception: SQLSTATE[HY000] [1045] Access denied for user 'purebeau_purebeautyitaly'@'localhost' (using password: YES) in /home/stockweb/store.stock.web.lk/include/database.php:20
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/include/database.php(127): Database->__construct()
+#1 /home/stockweb/store.stock.web.lk/common/styles.php(12): site_url()
+#2 /home/stockweb/store.stock.web.lk/index.php(123): include('/home/stockweb/...')
+#3 {main}
+  thrown in /home/stockweb/store.stock.web.lk/include/database.php on line 20
+[14-Oct-2025 18:11:24 UTC] PHP Fatal error:  Uncaught Exception: SQLSTATE[HY000] [1045] Access denied for user 'purebeau_purebeautyitaly'@'localhost' (using password: YES) in /home/stockweb/store.stock.web.lk/include/database.php:20
+Stack trace:
+#0 /home/stockweb/store.stock.web.lk/include/database.php(127): Database->__construct()
+#1 /home/stockweb/store.stock.web.lk/common/styles.php(12): site_url()
+#2 /home/stockweb/store.stock.web.lk/index.php(123): include('/home/stockweb/...')
+#3 {main}
+  thrown in /home/stockweb/store.stock.web.lk/include/database.php on line 20
+[23-Oct-2025 18:15:39 UTC] PHP Parse error:  syntax error, unexpected '=' in /home/stockweb/store.stock.web.lk/index.php on line 233
+[23-Oct-2025 18:15:41 UTC] PHP Parse error:  syntax error, unexpected '=' in /home/stockweb/store.stock.web.lk/index.php on line 233

@@ -1,0 +1,152 @@
+<?php
+ob_start();
+error_reporting(E_ALL ^ E_NOTICE);
+session_start();
+include('include/database.php');
+include('include/check_login.php');
+include('get_url.php');
+
+date_default_timezone_set("Asia/Colombo");
+
+$db = new Database();
+$purchaseNoteId = (int) ($_GET['purchase_note_id'] ?? 0);
+$message = $_GET['message'] ?? '';
+$type = $_GET['type'] ?? '';
+
+if ($purchaseNoteId <= 0) {
+    redirect('purchase-order-list.php?message=' . urlencode('Invalid purchase note.') . '&type=error');
+}
+
+$note = $db->getRow('SELECT * FROM purchase_note_header WHERE purchase_note_id = ?', [$purchaseNoteId]);
+if (!$note) {
+    redirect('purchase-order-list.php?message=' . urlencode('Purchase note not found.') . '&type=error');
+}
+
+if ($note['status'] === 'COMPLETED') {
+    redirect('purchase-order-view.php?id=' . $purchaseNoteId . '&message=' . urlencode('Purchase note already completed.') . '&type=error');
+}
+
+$supplier = $db->getRow('SELECT supplier_name FROM supplier WHERE supplier_id = ?', [$note['supplier_id']]);
+$items = $db->getRows('SELECT pni.*, itm.item_name FROM purchase_note_items pni JOIN item_master itm ON itm.item_id = pni.product_id WHERE pni.purchase_note_id = ?', [$purchaseNoteId]);
+
+function generateGrnCode()
+{
+    $db = new Database();
+    $row = $db->getRow('SELECT MAX(grn_h_id) AS grn_h_id FROM grn_hedder');
+    $lastId = (int) ($row['grn_h_id'] ?? 0);
+    $newId = $lastId + 1;
+    $randomNo = rand(100000, 999999);
+    return 'GRN' . $randomNo . $newId;
+}
+
+$grnCode = generateGrnCode();
+$today = date('Y-m-d');
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Create GRN</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <?php include('common/head.php'); ?>
+</head>
+<body class="page-sidebar-closed-hide-logo page-content-white">
+<?php include('common/manubar.php'); ?>
+<div class="clearfix"> </div>
+<div class="page-container">
+    <div class="page-sidebar-wrapper">
+        <?php include('common/sidebar.php'); ?>
+    </div>
+    <div class="page-content-wrapper">
+        <div class="page-content">
+            <div class="page-bar">
+                <ul class="page-breadcrumb">
+                    <li>
+                        <a>Purchase</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        <a>Create GRN</a>
+                    </li>
+                </ul>
+            </div>
+            <?php if (!empty($message)) { ?>
+                <div class="alert <?php echo ($type === 'error') ? 'alert-danger' : 'alert-success'; ?> alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+                    <?php echo htmlspecialchars($message); ?>
+                </div>
+            <?php } ?>
+            <h3 class="page-title">Create GRN</h3>
+
+            <div class="portlet light bordered">
+                <div class="portlet-body form">
+                    <form action="process/grn-create-process.php" method="post" class="form-horizontal">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label">GRN Code</label>
+                                        <input type="text" class="form-control" name="grn_code" readonly value="<?php echo $grnCode; ?>" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label">GRN Date</label>
+                                        <input type="date" class="form-control" name="grn_date" value="<?php echo $today; ?>" required />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Supplier</label>
+                                        <input type="text" class="form-control" readonly value="<?php echo $supplier['supplier_name'] ?? ''; ?>" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="purchase_note_id" value="<?php echo $purchaseNoteId; ?>" />
+
+                            <h4>GRN Items</h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Requested Qty</th>
+                                        <th>Total Received Qty</th>
+                                        <th>Balance Qty</th>
+                                        <th>Received Qty</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php foreach ($items as $item) { ?>
+                                        <tr>
+                                            <td><?php echo $item['item_name']; ?></td>
+                                            <td><?php echo $item['requested_qty']; ?></td>
+                                            <td><?php echo $item['total_received_qty']; ?></td>
+                                            <td><?php echo $item['balance_qty']; ?></td>
+                                            <td>
+                                                <input type="hidden" name="purchase_note_item_id[]" value="<?php echo $item['purchase_note_item_id']; ?>" />
+                                                <input type="number" step="0.01" min="0" max="<?php echo $item['balance_qty']; ?>" name="received_qty[]" class="form-control" />
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn green">Save GRN</button>
+                            <a href="purchase-order-view.php?id=<?php echo $purchaseNoteId; ?>" class="btn default">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

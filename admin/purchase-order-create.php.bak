@@ -1,0 +1,196 @@
+<?php
+ob_start();
+error_reporting(E_ALL ^ E_NOTICE);
+session_start();
+include('include/database.php');
+include('include/check_login.php');
+include('get_url.php');
+
+date_default_timezone_set("Asia/Colombo");
+
+function load_supplier()
+{
+    $db = new Database();
+    $rows = $db->getRows('SELECT * FROM supplier ORDER BY supplier_name ASC');
+    $output = '<option value="">Select Supplier</option>';
+    foreach ($rows as $row) {
+        $output .= '<option value="' . $row['supplier_id'] . '">' . $row['supplier_name'] . '</option>';
+    }
+    return $output;
+}
+
+function load_products()
+{
+    $db = new Database();
+    $rows = $db->getRows('SELECT * FROM item_master ORDER BY item_name ASC');
+    $output = '<option value="">Select Product</option>';
+    foreach ($rows as $row) {
+        $output .= '<option value="' . $row['item_id'] . '">' . $row['item_name'] . '</option>';
+    }
+    return $output;
+}
+
+function generatePurchaseNoteCode()
+{
+    $db = new Database();
+    $row = $db->getRow('SELECT MAX(purchase_note_id) AS purchase_note_id FROM purchase_note_header');
+    $lastId = (int) ($row['purchase_note_id'] ?? 0);
+    $newId = $lastId + 1;
+    $randomNo = rand(100000, 999999);
+    return 'PN' . $randomNo . $newId;
+}
+
+$purchaseNoteCode = generatePurchaseNoteCode();
+$today = date('Y-m-d');
+$message = $_GET['message'] ?? '';
+$type = $_GET['type'] ?? '';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Create Purchase Note</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <?php include('common/head.php'); ?>
+</head>
+<body class="page-sidebar-closed-hide-logo page-content-white">
+<?php include('common/manubar.php'); ?>
+<div class="clearfix"> </div>
+<div class="page-container">
+    <div class="page-sidebar-wrapper">
+        <?php include('common/sidebar.php'); ?>
+    </div>
+    <div class="page-content-wrapper">
+        <div class="page-content">
+            <div class="page-bar">
+                <ul class="page-breadcrumb">
+                    <li>
+                        <a>Purchase</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        <a>Create Purchase Note</a>
+                    </li>
+                </ul>
+            </div>
+            <?php if (!empty($message)) { ?>
+                <div class="alert <?php echo ($type === 'error') ? 'alert-danger' : 'alert-success'; ?> alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+                    <?php echo htmlspecialchars($message); ?>
+                </div>
+            <?php } ?>
+            <h3 class="page-title">Create Purchase Note</h3>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="portlet light bordered form-fit">
+                        <div class="portlet-body form">
+                            <form action="process/purchase-order-create-process.php" method="post" class="form-horizontal">
+                                <div class="form-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="control-label">Purchase Note Code</label>
+                                                <input type="text" name="purchase_note_code" class="form-control" readonly value="<?php echo $purchaseNoteCode; ?>" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="control-label">Purchase Date</label>
+                                                <input type="date" name="purchase_date" class="form-control" required value="<?php echo $today; ?>" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="control-label">Location</label>
+                                                <input type="text" class="form-control" readonly value="1" />
+                                                <input type="hidden" name="location_id" value="1" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label">Supplier</label>
+                                                <select name="supplier_id" class="form-control" required>
+                                                    <?php echo load_supplier(); ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr />
+                                    <h4>Purchase Note Items</h4>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="items-table">
+                                            <thead>
+                                            <tr>
+                                                <th style="width: 60%">Product</th>
+                                                <th style="width: 30%">Requested Qty</th>
+                                                <th style="width: 10%">Remove</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td>
+                                                    <select name="product_id[]" class="form-control" required>
+                                                        <?php echo load_products(); ?>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="number" step="0.01" min="0" name="requested_qty[]" class="form-control" required />
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-xs btn-danger remove-row" title="Remove">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="text-right">
+                                        <button type="button" class="btn btn-default" id="add-row">Add Row</button>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn green">Save Purchase Note</button>
+                                    <a href="purchase-order-list.php" class="btn default">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var addRowBtn = document.getElementById('add-row');
+        var tableBody = document.querySelector('#items-table tbody');
+
+        addRowBtn.addEventListener('click', function () {
+            var row = tableBody.rows[0].cloneNode(true);
+            row.querySelector('select').selectedIndex = 0;
+            row.querySelector('input').value = '';
+            tableBody.appendChild(row);
+        });
+
+        tableBody.addEventListener('click', function (event) {
+            if (event.target.closest('.remove-row')) {
+                if (tableBody.rows.length > 1) {
+                    event.target.closest('tr').remove();
+                }
+            }
+        });
+    })();
+</script>
+</body>
+</html>
