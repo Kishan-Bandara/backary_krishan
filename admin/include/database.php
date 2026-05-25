@@ -96,6 +96,15 @@ class Database{
 
 	}
 
+	//get last insert id
+	public function lastInsertId(){
+		try{
+			return $this->datab->lastInsertId();
+		} catch(PDOException $e){
+			throw new Exception ($e->getMessage());
+		}
+	}
+
 	//insert row
 	public function updateRow($query , $params = []){
 

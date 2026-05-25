@@ -224,7 +224,6 @@ foreach ($allItemIds as $itemId) {
     $standingQty = $standing['standing_qty'] ?? 0;
     $cartQty     = $cart['cart_qty'] ?? 0;
     $totalQty    = $standingQty + $cartQty;
-    $effectiveOriginalQty = $cartQty > 0 ? 0 : $standingQty;
 
     if (!isset($groups[$groupName])) {
         $groups[$groupName] = [
@@ -246,9 +245,9 @@ foreach ($allItemIds as $itemId) {
     ];
 
     $groups[$groupName]['total_weight_g']     += $weightG * $totalQty;
-    $groups[$groupName]['original_total_qty'] += $effectiveOriginalQty;
+    $groups[$groupName]['original_total_qty'] += $standingQty;
     $groups[$groupName]['total_qty']          += $totalQty;
-    $groups[$groupName]['late_total_qty']     += ($effectiveOriginalQty + $cartQty);
+    $groups[$groupName]['late_total_qty']     += $cartQty;
 }
 
 // Sort product types by name
@@ -289,9 +288,9 @@ function exportCutShapeReportXlsx($groups, $selectedDate, $formattedDate)
     $sheet = $spreadsheet->getActiveSheet();
     $sheet->setTitle('Cut & Shape Report');
 
-    $sheet->mergeCells('A1:E1');
+    $sheet->mergeCells('A1:F1');
     $sheet->setCellValue('A1', 'Cut & Shape Report');
-    $sheet->mergeCells('A2:E2');
+    $sheet->mergeCells('A2:F2');
     $sheet->setCellValue('A2', 'Delivery Date: ' . $formattedDate);
 
     $sheet->getStyle('A1')->applyFromArray([
@@ -309,14 +308,15 @@ function exportCutShapeReportXlsx($groups, $selectedDate, $formattedDate)
         'B' => 'Total Weight',
         'C' => 'Item Name',
         'D' => 'Original / Amended Qty',
-        'E' => 'Current With Late Order Qty',
+        'E' => 'Late Order Qty',
+        'F' => 'Total',
     ];
 
     foreach ($headers as $column => $label) {
         $sheet->setCellValue($column . $headerRow, $label);
     }
 
-    $sheet->getStyle('A4:E4')->applyFromArray([
+    $sheet->getStyle('A4:F4')->applyFromArray([
         'font' => ['bold' => true, 'size' => 11],
         'fill' => [
             'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -353,8 +353,9 @@ function exportCutShapeReportXlsx($groups, $selectedDate, $formattedDate)
         $sheet->setCellValue('B' . $groupStartRow, $weightLabel);
         $sheet->setCellValue('D' . $groupStartRow, $group['original_total_qty']);
         $sheet->setCellValue('E' . $groupStartRow, $group['late_total_qty']);
+        $sheet->setCellValue('F' . $groupStartRow, $group['total_qty']);
 
-        $sheet->getStyle('A' . $groupStartRow . ':E' . $groupStartRow)->applyFromArray([
+        $sheet->getStyle('A' . $groupStartRow . ':F' . $groupStartRow)->applyFromArray([
             'fill' => [
                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                 'startColor' => ['rgb' => 'D6E4D2'],
@@ -374,7 +375,7 @@ function exportCutShapeReportXlsx($groups, $selectedDate, $formattedDate)
         ]);
 
         $sheet->getStyle('B' . $groupStartRow)->getFont()->setBold(false);
-        $sheet->getStyle('D' . $groupStartRow . ':E' . $groupStartRow)->getFont()->setBold(true);
+        $sheet->getStyle('D' . $groupStartRow . ':F' . $groupStartRow)->getFont()->setBold(true);
 
         foreach ($group['items'] as $itemIndex => $item) {
             $row = $groupStartRow + 1 + $itemIndex;
@@ -382,6 +383,7 @@ function exportCutShapeReportXlsx($groups, $selectedDate, $formattedDate)
             $sheet->setCellValue('C' . $row, $item['item_name']);
             $sheet->setCellValue('D' . $row, $item['standing_qty']);
             $sheet->setCellValue('E' . $row, $item['cart_qty']);
+            $sheet->setCellValue('F' . $row, $item['total_qty']);
 
             if ($item['cart_qty'] > 0) {
                 $sheet->getStyle('D' . $row)->getFont()->setStrikethrough(true);
@@ -389,7 +391,7 @@ function exportCutShapeReportXlsx($groups, $selectedDate, $formattedDate)
             }
         }
 
-        $sheet->getStyle('A' . $groupStartRow . ':E' . $groupEndRow)->applyFromArray([
+        $sheet->getStyle('A' . $groupStartRow . ':F' . $groupEndRow)->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
@@ -407,7 +409,7 @@ function exportCutShapeReportXlsx($groups, $selectedDate, $formattedDate)
             ],
         ]);
 
-        $sheet->getStyle('C' . $groupEndRow . ':E' . $groupEndRow)->applyFromArray([
+        $sheet->getStyle('C' . $groupEndRow . ':F' . $groupEndRow)->applyFromArray([
             'borders' => [
                 'bottom' => [
                     'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
@@ -419,12 +421,13 @@ function exportCutShapeReportXlsx($groups, $selectedDate, $formattedDate)
         $currentRow = $groupEndRow + 1;
     }
 
-    $sheet->getStyle('D5:E' . max(5, $currentRow - 1))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    $sheet->getStyle('D5:F' . max(5, $currentRow - 1))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
     $sheet->getColumnDimension('A')->setWidth(20);
     $sheet->getColumnDimension('B')->setWidth(16);
     $sheet->getColumnDimension('C')->setWidth(36);
     $sheet->getColumnDimension('D')->setWidth(18);
     $sheet->getColumnDimension('E')->setWidth(18);
+    $sheet->getColumnDimension('F')->setWidth(18);
 
     $filename = 'Cut_Shape_Report_' . $selectedDate . '.xlsx';
 
@@ -459,7 +462,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     fputcsv($out, ['Cut & Shape Report', $formattedDate]);
     fputcsv($out, []);
     // Header row
-    fputcsv($out, ['Product Type', 'Total Weight', 'Item Name', 'Original / Amended Qty', 'Current With Late Order Qty']);
+    fputcsv($out, ['Product Type', 'Total Weight', 'Item Name', 'Original / Amended Qty', 'Late Order Qty', 'Total']);
 
     foreach ($groups as $groupName => $group) {
         $totalWeightKg = $group['total_weight_g'] > 0 ? round($group['total_weight_g'] / 1000, 2) : 0;
@@ -472,6 +475,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
             '',
             $group['original_total_qty'],
             $group['late_total_qty'],
+            $group['total_qty'],
         ]);
 
         foreach ($group['items'] as $item) {
@@ -481,6 +485,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                 $item['item_name'],
                 $item['standing_qty'],
                 $item['cart_qty'],
+                $item['total_qty'],
             ]);
         }
     }
@@ -614,7 +619,8 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                     <th class="col-weight">Total Weight</th>
                                     <th class="col-name">Item Name</th>
                                     <th class="col-qty">Original / Amended Qty</th>
-                                    <th class="col-qty">Current With Late Order Qty</th>
+                                    <th class="col-qty">Late Order Qty</th>
+                                    <th class="col-qty">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -630,6 +636,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                     <td></td>
                                     <td class="col-qty orig-total"><?php echo (int)$group['original_total_qty']; ?></td>
                                     <td class="col-qty total-highlight"><?php echo (int)$group['late_total_qty']; ?></td>
+                                    <td class="col-qty total-highlight"><?php echo (int)$group['total_qty']; ?></td>
                                 </tr>
                                 <?php foreach ($group['items'] as $itemIndex => $item): ?>
                                 <tr class="item-row<?php echo $itemIndex === $itemCount - 1 ? ' group-end' : ''; ?>">
@@ -641,6 +648,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                     </td>
                                     <td class="col-qty<?php echo $item['cart_qty'] > 0 ? ' original-overridden' : ''; ?>"><?php echo (int)$item['standing_qty']; ?></td>
                                     <td class="col-qty<?php echo $item['cart_qty'] > 0 ? ' late-highlight' : ''; ?>"><?php echo (int)$item['cart_qty']; ?></td>
+                                    <td class="col-qty total-highlight"><?php echo (int)$item['total_qty']; ?></td>
                                 </tr>
                                 <?php endforeach; ?>
                             <?php endforeach; ?>

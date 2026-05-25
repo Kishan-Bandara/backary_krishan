@@ -302,7 +302,7 @@ $canSettings = function_exists('hasAnyPermission') ? hasAnyPermission([
                 <?php if (function_exists('hasPermission') ? hasPermission('settings.permissions') : true) { ?><li><a href="smtp-settings.php"><i class="fa fa-envelope"></i> SMTP Email Settings</a></li><?php } ?>
                 <?php if (function_exists('hasPermission') ? hasPermission('settings.permissions') : true) { ?><li><a href="gst-maintenance.php"><i class="fa fa-money"></i> GST Maintenance</a></li><?php } ?>
                 <?php if (function_exists('hasPermission') ? hasPermission('settings.permissions') : true) { ?><li><a href="uom-maintenance.php"><i class="fa fa-balance-scale"></i> Unit Of Measure</a></li><?php } ?>
-                <?php if (function_exists('hasPermission') ? hasPermission('settings.permissions') : true) { ?><li><a href="batch-expire-update.php"><i class="fa fa-calendar-times-o"></i> Batch Expire Update</a></li><?php } ?>
+                <?php if (function_exists('hasPermission') ? hasPermission('settings.permissions') : true) { ?><li><a href="batch-update.php"><i class="fa fa-tags"></i> Batch Update</a></li><?php } ?>
                 <?php if (function_exists('hasPermission') ? hasPermission('settings.permissions') : true) { ?><li><a href="item-master-bulk-upload.php"><i class="fa fa-upload"></i> Item Master Bulk Upload</a></li><?php } ?>
                 <?php if (function_exists('hasPermission') ? hasPermission('settings.permissions') : true) { ?><li><a href="discount-code.php"><i class="fa fa-tag"></i> Discount Code</a></li><?php } ?>
                 <?php if ($canUserAdmin && (function_exists('hasPermission') ? hasPermission('settings.permissions') : true)) { ?><li class="divider"></li><?php } ?>

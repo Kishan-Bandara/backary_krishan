@@ -425,6 +425,12 @@
                                         <span class="title">Locations</span>
                                     </a>
                                 </li>
+                                <li class="nav-item  ">
+                                    <a href="batch-update.php" class="nav-link ">
+                                        <i class="fa fa-tags"></i>
+                                        <span class="title">Batch Update</span>
+                                    </a>
+                                </li>
                                 
                              
                              
