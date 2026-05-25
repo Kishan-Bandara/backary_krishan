@@ -5,6 +5,7 @@ namespace PhpOffice\PhpSpreadsheet\Reader;
 use DateTime;
 use DateTimeZone;
 use PhpOffice\PhpSpreadsheet\Cell\AddressHelper;
+use PhpOffice\PhpSpreadsheet\Cell\AddressRange;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\DefinedName;
@@ -43,18 +44,6 @@ class Xml extends BaseReader
     {
         parent::__construct();
         $this->securityScanner = XmlScanner::getInstance($this);
-        /** @var callable */
-        $unentity = [self::class, 'unentity'];
-        $this->securityScanner->setAdditionalCallback($unentity);
-    }
-
-    public static function unentity(string $contents): string
-    {
-        $contents = preg_replace('/&(amp|lt|gt|quot|apos);/', "\u{fffe}\u{feff}\$1;", trim($contents)) ?? $contents;
-        $contents = html_entity_decode($contents, ENT_NOQUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8');
-        $contents = str_replace("\u{fffe}\u{feff}", '&', $contents);
-
-        return $contents;
     }
 
     private string $fileContents = '';
@@ -90,6 +79,7 @@ class Xml extends BaseReader
         ];
 
         // Open file
+        File::assertFile($filename);
         $data = (string) file_get_contents($filename);
         $data = $this->getSecurityScannerOrThrow()->scan($data);
 
@@ -105,10 +95,23 @@ class Xml extends BaseReader
                 break;
             }
         }
-
         $this->fileContents = $data;
 
         return $valid;
+    }
+
+    /**
+     * Check if the file is a valid SimpleXML.
+     *
+     * @return false|SimpleXMLElement
+     *
+     * @deprecated 2.0.1 Should never have had public visibility
+     *
+     * @codeCoverageIgnore
+     */
+    public function trySimpleXMLLoadString(string $filename, string $fileOrString = 'file'): SimpleXMLElement|bool
+    {
+        return $this->trySimpleXMLLoadStringPrivate($filename, $fileOrString);
     }
 
     /** @return false|SimpleXMLElement */
@@ -132,8 +135,7 @@ class Xml extends BaseReader
             }
             if ($continue) {
                 $xml = @simplexml_load_string(
-                    $this->getSecurityScannerOrThrow()
-                        ->scan($data)
+                    $this->getSecurityScannerOrThrow()->scan($data)
                 );
             }
         } catch (Throwable $e) {
@@ -245,7 +247,6 @@ class Xml extends BaseReader
     {
         // Create new Spreadsheet
         $spreadsheet = new Spreadsheet();
-        $spreadsheet->setValueBinder($this->valueBinder);
         $spreadsheet->removeSheetByIndex(0);
 
         // Load into this instance
@@ -259,7 +260,6 @@ class Xml extends BaseReader
     {
         // Create new Spreadsheet
         $spreadsheet = new Spreadsheet();
-        $spreadsheet->setValueBinder($this->valueBinder);
         $spreadsheet->removeSheetByIndex(0);
 
         // Load into this instance
@@ -372,7 +372,9 @@ class Xml extends BaseReader
                             $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setWidth($columnWidth / 5.4);
                         }
                         if (isset($columnVisible)) {
-                            $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setVisible($columnVisible);
+                            $spreadsheet->getActiveSheet()
+                                ->getColumnDimension($columnID)
+                                ->setVisible($columnVisible);
                         }
                         StringHelper::stringIncrement($columnID);
                         --$colspan;
@@ -380,14 +382,18 @@ class Xml extends BaseReader
                 }
             }
 
-            $rowID = 1;
+            $rowID = 0;
             if (isset($worksheet->Table->Row)) {
                 $additionalMergedCells = 0;
                 foreach ($worksheet->Table->Row as $rowData) {
+                    ++$rowID;
                     $rowHasData = false;
                     $row_ss = self::getAttributes($rowData, self::NAMESPACES_SS);
                     if (isset($row_ss['Index'])) {
                         $rowID = (int) $row_ss['Index'];
+                    }
+                    if ($rowID < 1 || $rowID > AddressRange::MAX_ROW) {
+                        continue;
                     }
                     if (isset($row_ss['Hidden'])) {
                         $rowVisible = ((string) $row_ss['Hidden']) !== '1';
@@ -396,16 +402,11 @@ class Xml extends BaseReader
 
                     $columnID = 'A';
                     foreach ($rowData->Cell as $cell) {
-                        $arrayRef = '';
                         $cell_ss = self::getAttributes($cell, self::NAMESPACES_SS);
                         if (isset($cell_ss['Index'])) {
                             $columnID = Coordinate::stringFromColumnIndex((int) $cell_ss['Index']);
                         }
                         $cellRange = $columnID . $rowID;
-                        if (isset($cell_ss['ArrayRange'])) {
-                            $arrayRange = (string) $cell_ss['ArrayRange'];
-                            $arrayRef = AddressHelper::convertFormulaToA1($arrayRange, $rowID, Coordinate::columnIndexFromString($columnID));
-                        }
 
                         if ($this->getReadFilter() !== null) {
                             if (!$this->getReadFilter()->readCell($columnID, $rowID, $worksheetName)) {
@@ -438,9 +439,6 @@ class Xml extends BaseReader
                         if (isset($cell_ss['Formula'])) {
                             $cellDataFormula = $cell_ss['Formula'];
                             $hasCalculatedValue = true;
-                            if ($arrayRef !== '') {
-                                $spreadsheet->getActiveSheet()->getCell($columnID . $rowID)->setFormulaAttributes(['t' => 'array', 'ref' => $arrayRef]);
-                            }
                         }
                         if (isset($cell->Data)) {
                             $cellData = $cell->Data;
@@ -519,6 +517,9 @@ class Xml extends BaseReader
                         if (isset($cell_ss['StyleID'])) {
                             $style = (string) $cell_ss['StyleID'];
                             if ((isset($this->styles[$style])) && (!empty($this->styles[$style]))) {
+                                //if (!$spreadsheet->getActiveSheet()->cellExists($columnID . $rowID)) {
+                                //    $spreadsheet->getActiveSheet()->getCell($columnID . $rowID)->setValue(null);
+                                //}
                                 $spreadsheet->getActiveSheet()->getStyle($cellRange)
                                     ->applyFromArray($this->styles[$style]);
                             }
@@ -536,8 +537,6 @@ class Xml extends BaseReader
                             $spreadsheet->getActiveSheet()->getRowDimension($rowID)->setRowHeight((float) $rowHeight);
                         }
                     }
-
-                    ++$rowID;
                 }
             }
 

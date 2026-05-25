@@ -141,9 +141,7 @@ class Settings
     }
 
     /**
-     * Set the HTTP client implementation to be used for network request.
-     *
-     * @deprecated 3.10.3 No replacement.
+     * @deprecated 2.4.3 No replacement.
      *
      * @codeCoverageIgnore
      */
@@ -154,9 +152,7 @@ class Settings
     }
 
     /**
-     * Unset the HTTP client configuration.
-     *
-     * @deprecated 3.10.3 No replacement.
+     * @deprecated 2.4.3 No replacement.
      *
      * @codeCoverageIgnore
      */
@@ -167,9 +163,7 @@ class Settings
     }
 
     /**
-     * Get the HTTP client implementation to be used for network request.
-     *
-     * @deprecated 3.10.3 No replacement.
+     * @deprecated 2.4.3 No replacement.
      *
      * @codeCoverageIgnore
      */
@@ -179,9 +173,7 @@ class Settings
     }
 
     /**
-     * Get the HTTP request factory.
-     *
-     * @deprecated 3.10.3 No replacement.
+     * @deprecated 2.4.3 No replacement.
      *
      * @codeCoverageIgnore
      */

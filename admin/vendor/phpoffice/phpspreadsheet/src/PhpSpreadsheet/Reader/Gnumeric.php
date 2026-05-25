@@ -225,7 +225,6 @@ class Gnumeric extends BaseReader
     {
         // Create new Spreadsheet
         $spreadsheet = new Spreadsheet();
-        $spreadsheet->setValueBinder($this->valueBinder);
         $spreadsheet->removeSheetByIndex(0);
 
         // Load into this instance
@@ -550,21 +549,15 @@ class Gnumeric extends BaseReader
     ): void {
         $ValueType = $cellAttributes->ValueType;
         $ExprID = (string) $cellAttributes->ExprID;
-        $rows = (int) ($cellAttributes->Rows ?? 0);
-        $cols = (int) ($cellAttributes->Cols ?? 0);
         $type = DataType::TYPE_FORMULA;
-        $isArrayFormula = ($rows > 0 && $cols > 0);
-        $arrayFormulaRange = $isArrayFormula ? $this->getArrayFormulaRange($column, $row, $cols, $rows) : null;
         if ($ExprID > '') {
             if (((string) $cell) > '') {
-                // Formula
                 $this->expressions[$ExprID] = [
                     'column' => $cellAttributes->Col,
                     'row' => $cellAttributes->Row,
                     'formula' => (string) $cell,
                 ];
             } else {
-                // Shared Formula
                 $expression = $this->expressions[$ExprID];
 
                 $cell = $this->referenceHelper->updateFormulaReferences(
@@ -576,39 +569,21 @@ class Gnumeric extends BaseReader
                 );
             }
             $type = DataType::TYPE_FORMULA;
-        } elseif ($isArrayFormula === false) {
+        } else {
             $vtype = (string) $ValueType;
             if (array_key_exists($vtype, self::$mappings['dataType'])) {
                 $type = self::$mappings['dataType'][$vtype];
             }
-            if ($vtype === '20') { //    Boolean
+            if ($vtype === '20') {        //    Boolean
                 $cell = $cell == 'TRUE';
             }
         }
 
         $this->spreadsheet->getActiveSheet()->getCell($column . $row)->setValueExplicit((string) $cell, $type);
-        if ($arrayFormulaRange === null) {
-            $this->spreadsheet->getActiveSheet()->getCell($column . $row)->setFormulaAttributes(null);
-        } else {
-            $this->spreadsheet->getActiveSheet()->getCell($column . $row)->setFormulaAttributes(['t' => 'array', 'ref' => $arrayFormulaRange]);
-        }
         if (isset($cellAttributes->ValueFormat)) {
             $this->spreadsheet->getActiveSheet()->getCell($column . $row)
                 ->getStyle()->getNumberFormat()
                 ->setFormatCode((string) $cellAttributes->ValueFormat);
         }
-    }
-
-    private function getArrayFormulaRange(string $column, int $row, int $cols, int $rows): string
-    {
-        $arrayFormulaRange = $column . $row;
-        $arrayFormulaRange .= ':'
-            . Coordinate::stringFromColumnIndex(
-                Coordinate::columnIndexFromString($column)
-                + $cols - 1
-            )
-            . (string) ($row + $rows - 1);
-
-        return $arrayFormulaRange;
     }
 }

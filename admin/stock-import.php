@@ -16,6 +16,32 @@ if (!isSuperAdmin()) {
     exit;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// TEMPLATE COLUMN POSITIONS (1-based, fixed)
+// Col 1  → Product ID      (used for item match/create)
+// Col 2  → Product Code    (SKU)
+// Col 3  → Product Name
+// Col 4  → Group
+// Col 5  → Type
+// Col 6  → Category
+// Col 7  → Stock Qty
+// Col 8  → Batch No
+// Col 9  → Expiry Date
+// Col 10 → UOM
+// Col 11 → Additional UOM
+// ─────────────────────────────────────────────────────────────────────────────
+define('COL_PRODUCT_ID',      1);
+define('COL_PRODUCT_CODE',    2);
+define('COL_PRODUCT_NAME',    3);
+define('COL_GROUP',           4);
+define('COL_TYPE',            5);
+define('COL_CATEGORY',        6);
+define('COL_STOCK_QTY',       7);
+define('COL_BATCH_NO',        8);
+define('COL_EXPIRY_DATE',     9);
+define('COL_UOM',            10);
+define('COL_ADDITIONAL_UOM', 11);
+
 $db = new Database();
 
 // Fetch groups and types for default assignment
@@ -82,51 +108,44 @@ function processStockImport(Database $db, $filePath, $postData)
         return ['error' => 'Failed to read Excel file: ' . $e->getMessage()];
     }
 
-    $sheet = $spreadsheet->getActiveSheet();
+    // Check if batch_master table exists
+    $batchTableExists = $db->getRow("SHOW TABLES LIKE 'batch_master'");
+    if (!$batchTableExists) {
+        return ['error' => '<strong>batch_master table does not exist!</strong><br>Please run the batch tracking migration first:<br><a href="process/batch-tracking-migration.php" target="_blank" style="color:#007bff;">Click here to run migration</a><br><br>Or manually run: <code style="background:#f0f0f0;padding:4px">CREATE TABLE IF NOT EXISTS batch_master ( batch_id INT AUTO_INCREMENT PRIMARY KEY, product_id INT NOT NULL, batch_no VARCHAR(100) NOT NULL, expiry_date DATE DEFAULT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, UNIQUE KEY unique_batch (product_id, batch_no), INDEX idx_product (product_id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8</code>'];
+    }
+
+    $sheet      = $spreadsheet->getActiveSheet();
     $highestRow = $sheet->getHighestRow();
-    $highestCol = $sheet->getHighestColumn();
 
-    // Read header row to auto-map columns
-    $headers = [];
-    $colIndex = 1;
-    foreach ($sheet->getRowIterator(1, 1) as $row) {
-        $cellIterator = $row->getCellIterator();
-        $cellIterator->setIterateOnlyExistingCells(false);
-        foreach ($cellIterator as $cell) {
-            $val = strtolower(trim((string)$cell->getValue()));
-            $headers[$colIndex] = $val;
-            $colIndex++;
-        }
+    // Validate header row against expected template
+    $headerSku = strtolower(trim(getWorksheetCellText($sheet, COL_PRODUCT_CODE, 1)));
+    $headerQty = strtolower(trim(getWorksheetCellText($sheet, COL_STOCK_QTY, 1)));
+    if (strpos($headerSku, 'code') === false && strpos($headerSku, 'sku') === false) {
+        return ['error' => 'Column B does not look like "Product Code". Found: "' . $headerSku . '". Please use the correct template.'];
     }
-
-    // Map columns by common header names
-    $columnMap = autoMapColumns($headers);
-
-    if (!isset($columnMap['sku'])) {
-        return ['error' => 'Could not find a SKU/Item Code column in the Excel file. Found headers: ' . implode(', ', array_values($headers))];
-    }
-    if (!isset($columnMap['qty'])) {
-        return ['error' => 'Could not find a Qty/Quantity column in the Excel file. Found headers: ' . implode(', ', array_values($headers))];
+    if (strpos($headerQty, 'qty') === false && strpos($headerQty, 'stock') === false) {
+        return ['error' => 'Column G does not look like "Stock Qty". Found: "' . $headerQty . '". Please use the correct template.'];
     }
 
     $locationId = (int)($postData['location_id'] ?? 1);
-    $defaultGroupId = (int)($postData['default_group_id'] ?? 0);
-    $defaultTypeId = (int)($postData['default_type_id'] ?? 0);
-    $batchPrefix = trim($postData['batch_prefix'] ?? 'IMP');
     $importDate = date('Y-m-d H:i:s');
-    $batchNo = $batchPrefix . '-' . date('Ymd-His');
 
     $results = [
-        'total_rows' => 0,
+        'total_rows'    => 0,
         'stock_updated' => 0,
-        'new_products' => 0,
-        'skipped' => 0,
-        'errors' => [],
-        'rows' => [],
+        'new_products'  => 0,
+        'skipped'       => 0,
+        'errors'        => [],
+        'rows'          => [],
+        'table_operations' => [
+            'item_master' => ['inserted' => 0, 'updated' => 0],
+            'batch_master' => ['inserted' => 0],
+            'fifo' => ['inserted' => 0],
+        ],
     ];
 
     for ($rowNum = 2; $rowNum <= $highestRow; $rowNum++) {
-        $sku = getWorksheetCellText($sheet, $columnMap['sku'], $rowNum);
+        $sku = getWorksheetCellText($sheet, COL_PRODUCT_CODE, $rowNum);
 
         if ($sku === '') {
             continue;
@@ -134,93 +153,193 @@ function processStockImport(Database $db, $filePath, $postData)
 
         $results['total_rows']++;
 
-        $productName = isset($columnMap['name']) ? getWorksheetCellText($sheet, $columnMap['name'], $rowNum) : '';
-        $qty = getWorksheetCellNumber($sheet, $columnMap['qty'], $rowNum);
-        $costPrice = isset($columnMap['cost']) ? getWorksheetCellNumber($sheet, $columnMap['cost'], $rowNum) : 0;
-        $sellPrice = isset($columnMap['sell_price']) ? getWorksheetCellNumber($sheet, $columnMap['sell_price'], $rowNum) : 0;
-        $uom = isset($columnMap['uom']) ? getWorksheetCellText($sheet, $columnMap['uom'], $rowNum) : 'EA';
-        $barcode = isset($columnMap['barcode']) ? getWorksheetCellText($sheet, $columnMap['barcode'], $rowNum) : '';
-        $category = isset($columnMap['category']) ? getWorksheetCellText($sheet, $columnMap['category'], $rowNum) : '';
+        // Read all template columns
+        $excelProductId = (int)getWorksheetCellNumber($sheet, COL_PRODUCT_ID,    $rowNum); // Col A (reference only)
+        $productName    = getWorksheetCellText($sheet,   COL_PRODUCT_NAME,   $rowNum);
+        $groupName      = getWorksheetCellText($sheet,   COL_GROUP,           $rowNum);
+        $typeName       = getWorksheetCellText($sheet,   COL_TYPE,            $rowNum);
+        $category       = getWorksheetCellText($sheet,   COL_CATEGORY,        $rowNum);
+        $qty            = getWorksheetCellNumber($sheet, COL_STOCK_QTY,       $rowNum);
+        $batchNo        = getWorksheetCellText($sheet,   COL_BATCH_NO,        $rowNum);
+        $expiryRaw      = getWorksheetCellText($sheet,   COL_EXPIRY_DATE,     $rowNum);
+        $uom            = getWorksheetCellText($sheet,   COL_UOM,             $rowNum);
+        $additionalUom  = getWorksheetCellText($sheet,   COL_ADDITIONAL_UOM,  $rowNum);
+
+        // Parse expiry date (handles dd/mm/yyyy or Excel serial)
+        $expiryDate = parseExcelDate($sheet, COL_EXPIRY_DATE, $rowNum, $expiryRaw);
+
+        // Leave batch no as null if not provided
+        if ($batchNo === '') {
+            $batchNo = null;
+        }
 
         if ($qty <= 0) {
             $results['skipped']++;
             $results['rows'][] = [
-                'row' => $rowNum,
-                'sku' => $sku,
-                'name' => $productName,
-                'status' => 'skipped',
-                'message' => 'Qty is zero or empty',
+                'row'     => $rowNum,
+                'sku'     => $sku,
+                'name'    => $productName,
+                'qty'     => $qty,
+                'batch'   => $batchNo,
+                'expiry'  => $expiryDate,
+                'status'  => 'skipped',
+                'message' => 'Stock Qty is zero or empty',
             ];
             continue;
         }
 
         try {
-            // Check if SKU exists in item_master
-            $existingProduct = $db->getRow('SELECT item_id, item_name, item_purchase_price, batch_tracking FROM item_master WHERE item_code = ?', [$sku]);
+            // Match strictly by Product Code (SKU) to resolve the real item_id from item_master
+            $existingProduct = $db->getRow(
+                'SELECT item_id, item_name, item_purchase_price, batch_tracking FROM item_master WHERE item_code = ?',
+                [$sku]
+            );
 
             if ($existingProduct) {
-                // SKU EXISTS → Add stock with batch
-                $productId = (int)$existingProduct['item_id'];
-                $rate = $costPrice > 0 ? $costPrice : (float)$existingProduct['item_purchase_price'];
+                // ── EXISTING PRODUCT → Add stock ──────────────────────────────
+                $itemId        = (int)$existingProduct['item_id'];
+                $rate          = (float)$existingProduct['item_purchase_price'];
                 $batchTracking = $existingProduct['batch_tracking'] ?? 'NONE';
 
-                $batchId = createOrFindBatch($db, $productId, $batchNo, $batchTracking);
+                // Update additional_uoms if provided in Excel
+                if ($additionalUom !== '') {
+                    $db->updateRow(
+                        'UPDATE item_master SET additional_uoms = ? WHERE item_id = ?',
+                        [$additionalUom, $itemId]
+                    );
+                    $results['table_operations']['item_master']['updated']++;
+                }
 
-                // Insert FIFO stock record (ft_type=1 for inbound)
+                $batchId = null;
+                if ($batchNo !== null) {
+                    $batchId = createOrFindBatch($db, $itemId, $batchNo, $expiryDate, $batchTracking);
+                    if ($batchTracking === 'NONE') {
+                        $results['table_operations']['item_master']['updated']++;
+                    }
+                    $results['table_operations']['batch_master']['inserted']++;
+                }
+
                 $db->insertRow(
                     'INSERT INTO fifo (ft_location, ft_document, ft_item, ft_qty, ft_blanace, ft_rate, ft_date, ft_type, batch_id) VALUES (?,?,?,?,?,?,?,?,?)',
-                    [$locationId, 0, $productId, $qty, $qty, $rate, $importDate, 1, $batchId]
+                    [$locationId, 0, $itemId, $qty, $qty, $rate, $importDate, 1, $batchId]
                 );
+                $results['table_operations']['fifo']['inserted']++;
 
                 $results['stock_updated']++;
                 $results['rows'][] = [
-                    'row' => $rowNum,
-                    'sku' => $sku,
-                    'name' => $existingProduct['item_name'],
-                    'qty' => $qty,
-                    'status' => 'updated',
-                    'message' => 'Stock added (' . $qty . ' units @ ' . number_format($rate, 2) . ')',
+                    'row'     => $rowNum,
+                    'sku'     => $sku,
+                    'name'    => $existingProduct['item_name'],
+                    'qty'     => $qty,
+                    'batch'   => $batchNo,
+                    'expiry'  => $expiryDate,
+                    'status'  => 'updated',
+                    'message' => 'Stock added (' . $qty . ' units, Batch: ' . $batchNo . ')',
                 ];
             } else {
-                // SKU DOES NOT EXIST → Create new product then add stock
+                // ── NEW PRODUCT → Create then add stock ───────────────────────
                 if ($productName === '') {
                     $productName = 'Product ' . $sku;
                 }
 
-                $newProductId = createNewProduct($db, $sku, $productName, $costPrice, $sellPrice, $uom, $barcode, $category, $defaultGroupId, $defaultTypeId);
+                $groupId   = resolveGroupId($db, $groupName);
+                $typeId    = resolveTypeId($db, $typeName, $groupId);
 
-                $batchId = createOrFindBatch($db, $newProductId, $batchNo, 'BATCH');
+                $newItemId = createNewProduct(
+                    $db, $sku, $productName,
+                    0, 0,
+                    $uom !== '' ? $uom : 'EA',
+                    $sku,
+                    $category,
+                    $groupId,
+                    $typeId,
+                    $additionalUom,
+                    0
+                );
+                $results['table_operations']['item_master']['inserted']++;
 
-                // Insert FIFO stock record
-                $rate = $costPrice > 0 ? $costPrice : 0;
+                $batchId = null;
+                if ($batchNo !== null) {
+                    $batchId = createOrFindBatch($db, $newItemId, $batchNo, $expiryDate, 'BATCH');
+                    $results['table_operations']['batch_master']['inserted']++;
+                }
+
                 $db->insertRow(
                     'INSERT INTO fifo (ft_location, ft_document, ft_item, ft_qty, ft_blanace, ft_rate, ft_date, ft_type, batch_id) VALUES (?,?,?,?,?,?,?,?,?)',
-                    [$locationId, 0, $newProductId, $qty, $qty, $rate, $importDate, 1, $batchId]
+                    [$locationId, 0, $newItemId, $qty, $qty, 0, $importDate, 1, $batchId]
                 );
+                $results['table_operations']['fifo']['inserted']++;
 
                 $results['new_products']++;
                 $results['rows'][] = [
-                    'row' => $rowNum,
-                    'sku' => $sku,
-                    'name' => $productName,
-                    'qty' => $qty,
-                    'status' => 'created',
-                    'message' => 'New product created & stock added (' . $qty . ' units)',
+                    'row'     => $rowNum,
+                    'sku'     => $sku,
+                    'name'    => $productName,
+                    'qty'     => $qty,
+                    'batch'   => $batchNo,
+                    'expiry'  => $expiryDate,
+                    'status'  => 'created',
+                    'message' => 'New product created & stock added (' . $qty . ' units, Batch: ' . $batchNo . ')',
                 ];
             }
         } catch (Exception $e) {
             $results['errors'][] = 'Row ' . $rowNum . ' (' . $sku . '): ' . $e->getMessage();
             $results['rows'][] = [
-                'row' => $rowNum,
-                'sku' => $sku,
-                'name' => $productName,
-                'status' => 'error',
+                'row'     => $rowNum,
+                'sku'     => $sku,
+                'name'    => $productName ?? '',
+                'qty'     => $qty ?? 0,
+                'batch'   => $batchNo ?? '',
+                'expiry'  => $expiryDate ?? '',
+                'status'  => 'error',
                 'message' => $e->getMessage(),
             ];
         }
     }
 
     return $results;
+}
+
+// ─── Parse expiry date from Excel (serial number or dd/mm/yyyy string) ────────
+function parseExcelDate($sheet, $colIndex, $rowNum, $rawText)
+{
+    if ($rawText === '') return null;
+
+    $cell = getWorksheetCell($sheet, $colIndex, $rowNum);
+    $raw  = $cell->getValue();
+    if (is_numeric($raw) && $raw > 1000) {
+        try {
+            $dt = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($raw);
+            return $dt->format('Y-m-d');
+        } catch (Exception $e) {}
+    }
+
+    foreach (['d/m/Y', 'd-m-Y', 'Y-m-d', 'm/d/Y'] as $fmt) {
+        $dt = DateTime::createFromFormat($fmt, $rawText);
+        if ($dt) return $dt->format('Y-m-d');
+    }
+
+    return $rawText;
+}
+
+// ─── Resolve group_id by name ─────────────────────────────────────────────────
+function resolveGroupId(Database $db, $groupName)
+{
+    if ($groupName === '') return null;
+    $row = $db->getRow('SELECT group_id FROM gorup_master WHERE group_name = ? LIMIT 1', [$groupName]);
+    return $row ? (int)$row['group_id'] : null;
+}
+
+// ─── Resolve type_id by name ──────────────────────────────────────────────────
+function resolveTypeId(Database $db, $typeName, $groupId)
+{
+    if ($typeName === '') return null;
+    if ($groupId) {
+        $row = $db->getRow('SELECT type_id FROM type_master WHERE type_name = ? AND group_id = ? LIMIT 1', [$typeName, $groupId]);
+    } else {
+        $row = $db->getRow('SELECT type_id FROM type_master WHERE type_name = ? LIMIT 1', [$typeName]);
+    }
+    return $row ? (int)$row['type_id'] : null;
 }
 
 function getWorksheetCell($sheet, $columnIndex, $rowNum)
@@ -304,131 +423,121 @@ function normalizeImportedNumber($value)
     return is_numeric($value) ? (float)$value : 0.0;
 }
 
-function createOrFindBatch(Database $db, $productId, $batchNo, $batchTracking)
+function createOrFindBatch(Database $db, $productId, $batchNo, $expiryDate, $batchTracking)
 {
+    // Validate product_id first
+    if (!$productId || (int)$productId <= 0) {
+        throw new Exception('Cannot create batch: product_id is invalid (' . var_export($productId, true) . '). Ensure product was created successfully.');
+    }
+
+    // Get product_id from item_master to ensure it exists
+    $product = $db->getRow('SELECT item_id FROM item_master WHERE item_id = ?', [$productId]);
+    if (!$product) {
+        throw new Exception('Product with ID ' . $productId . ' not found in item_master.');
+    }
+
+    $productId = (int)$product['item_id'];
+
     if ($batchTracking === 'NONE') {
         // Enable batch tracking for imports
         $db->updateRow('UPDATE item_master SET batch_tracking = ? WHERE item_id = ? AND batch_tracking = ?', ['BATCH', $productId, 'NONE']);
     }
 
-    $existingBatch = $db->getRow('SELECT batch_id FROM batch_master WHERE product_id = ? AND batch_no = ?', [$productId, $batchNo]);
+    if ($batchNo === null || $batchNo === '') {
+        $existingBatch = $db->getRow('SELECT batch_id FROM batch_master WHERE product_id = ? AND batch_no IS NULL', [$productId]);
+    } else {
+        $existingBatch = $db->getRow('SELECT batch_id FROM batch_master WHERE product_id = ? AND batch_no = ?', [$productId, $batchNo]);
+    }
     if ($existingBatch) {
         return (int)$existingBatch['batch_id'];
     }
 
     $db->insertRow(
         'INSERT INTO batch_master (product_id, batch_no, expiry_date) VALUES (?,?,?)',
-        [$productId, $batchNo, null]
+        [$productId, $batchNo, $expiryDate]
     );
 
-    $newBatch = $db->getRow('SELECT batch_id FROM batch_master WHERE product_id = ? AND batch_no = ?', [$productId, $batchNo]);
+    if ($batchNo === null || $batchNo === '') {
+        $newBatch = $db->getRow('SELECT batch_id FROM batch_master WHERE product_id = ? AND batch_no IS NULL ORDER BY batch_id DESC LIMIT 1', [$productId]);
+    } else {
+        $newBatch = $db->getRow('SELECT batch_id FROM batch_master WHERE product_id = ? AND batch_no = ? ORDER BY batch_id DESC LIMIT 1', [$productId, $batchNo]);
+    }
     return (int)($newBatch['batch_id'] ?? 0);
 }
 
-function createNewProduct(Database $db, $sku, $name, $costPrice, $sellPrice, $uom, $barcode, $category, $defaultGroupId, $defaultTypeId)
+function createNewProduct(Database $db, $sku, $name, $costPrice, $sellPrice, $uom, $barcode, $category, $groupId, $typeId, $additionalUom = '', $excelProductId = 0)
 {
     // Generate URL-safe slug
-    $slug = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $name));
+    $slug    = strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', $name));
     $lastRow = $db->getRow('SELECT MAX(item_id) as max_id FROM item_master');
-    $nextId = ((int)($lastRow['max_id'] ?? 0)) + 1;
+    $nextId  = ((int)($lastRow['max_id'] ?? 0)) + 1;
     $urlSlug = $slug . '-' . $nextId;
 
-    $db->insertRow(
-        'INSERT INTO item_master (
-            item_code, item_name, item_group, item_type, item_category,
-            item_discription, item_uom, item_purchase_price,
-            item_normal_selling_price, item_barcode, item_active,
-            item_vat, url, item_mode, live, batch_tracking
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-        [
-            $sku,
-            $name,
-            $defaultGroupId > 0 ? $defaultGroupId : null,
-            $defaultTypeId > 0 ? $defaultTypeId : null,
-            $category !== '' ? $category : null,
-            $name,
-            $uom !== '' ? $uom : 'EA',
-            $costPrice,
-            $sellPrice > 0 ? $sellPrice : $costPrice,
-            $barcode !== '' ? $barcode : $sku,
-            'Y',
-            0,
-            $urlSlug,
-            'goods',
-            1,
-            'BATCH'
-        ]
-    );
+    if ((int)$excelProductId > 0) {
+        $db->insertRow(
+            'INSERT INTO item_master (
+                item_id, item_code, item_name, item_group, item_type, item_category,
+                item_discription, item_uom, additional_uoms,
+                item_purchase_price, item_normal_selling_price,
+                item_barcode, item_active, item_vat, url, item_mode, live, batch_tracking
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            [
+                (int)$excelProductId,
+                $sku,
+                $name,
+                $groupId,
+                $typeId,
+                $category !== '' ? $category : null,
+                $name,
+                $uom !== '' ? $uom : 'EA',
+                $additionalUom !== '' ? $additionalUom : null,
+                $costPrice,
+                $sellPrice > 0 ? $sellPrice : $costPrice,
+                $barcode !== '' ? $barcode : $sku,
+                'Y',
+                0,
+                $urlSlug,
+                'goods',
+                'yes',
+                'BATCH',
+            ]
+        );
+    } else {
+        $db->insertRow(
+            'INSERT INTO item_master (
+                item_code, item_name, item_group, item_type, item_category,
+                item_discription, item_uom, additional_uoms,
+                item_purchase_price, item_normal_selling_price,
+                item_barcode, item_active, item_vat, url, item_mode, live, batch_tracking
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            [
+                $sku,
+                $name,
+                $groupId,
+                $typeId,
+                $category !== '' ? $category : null,
+                $name,
+                $uom !== '' ? $uom : 'EA',
+                $additionalUom !== '' ? $additionalUom : null,
+                $costPrice,
+                $sellPrice > 0 ? $sellPrice : $costPrice,
+                $barcode !== '' ? $barcode : $sku,
+                'Y',
+                0,
+                $urlSlug,
+                'goods',
+                'yes',
+                'BATCH',
+            ]
+        );
+    }
 
     $newProduct = $db->getRow('SELECT item_id FROM item_master WHERE item_code = ? ORDER BY item_id DESC LIMIT 1', [$sku]);
-    return (int)($newProduct['item_id'] ?? 0);
-}
-
-function autoMapColumns($headers)
-{
-    $map = [];
-    $normalizedHeaders = [];
-    $exactMatches = [
-        'sku' => ['sku', 'item code', 'product code', 'stock code', 'item no', 'product no', 'code'],
-        'name' => ['name', 'item name', 'product name', 'description', 'product description', 'item description'],
-        'qty' => ['qty', 'quantity', 'stock', 'stock qty', 'stock quantity', 'on hand', 'qty in hand', 'quantity in hand', 'available qty', 'available quantity', 'inventory qty', 'inventory quantity', 'opening stock', 'opening qty', 'count'],
-        'cost' => ['cost', 'purchase price', 'buy price', 'unit cost', 'cost price', 'landed cost'],
-        'sell_price' => ['sell price', 'selling price', 'sale price', 'retail price', 'rrp', 'unit price', 'price'],
-        'uom' => ['uom', 'unit', 'unit of measure', 'measure'],
-        'barcode' => ['barcode', 'bar code', 'ean', 'upc', 'gtin'],
-        'category' => ['category', 'cat', 'type', 'group'],
-    ];
-    $patterns = [
-        'sku' => '/\b(sku|item code|product code|stock code|item no|product no|code)\b/i',
-        'name' => '/\b(name|item name|product name|description|product description|item description)\b/i',
-        'qty' => '/\b(qty|quantity|on hand|available|inventory|count|opening stock|opening qty)\b/i',
-        'cost' => '/\b(cost|purchase price|buy price|unit cost|cost price|landed cost)\b/i',
-        'sell_price' => '/\b(sell|selling price|sale price|retail|rrp|unit price|price)\b/i',
-        'uom' => '/\b(uom|unit|unit of measure|measure)\b/i',
-        'barcode' => '/\b(barcode|bar code|ean|upc|gtin)\b/i',
-        'category' => '/\b(category|cat|type|group)\b/i',
-    ];
-
-    foreach ($headers as $colIndex => $headerVal) {
-        $normalizedHeaders[$colIndex] = normalizeImportHeader($headerVal);
+    $newProductId = (int)($newProduct['item_id'] ?? 0);
+    if ($newProductId <= 0) {
+        throw new Exception('Failed to create product for SKU "' . $sku . '". Insert may have failed or SKU not found after insertion.');
     }
-
-    foreach ($normalizedHeaders as $colIndex => $headerVal) {
-        if ($headerVal === '') {
-            continue;
-        }
-        foreach ($exactMatches as $field => $aliases) {
-            if (!isset($map[$field]) && in_array($headerVal, $aliases, true)) {
-                $map[$field] = $colIndex;
-            }
-        }
-    }
-
-    foreach ($normalizedHeaders as $colIndex => $headerVal) {
-        if ($headerVal === '') {
-            continue;
-        }
-        foreach ($patterns as $field => $pattern) {
-            if (isset($map[$field])) {
-                continue;
-            }
-
-            if ($field === 'qty' && strpos($headerVal, 'stock') !== false) {
-                if (preg_match('/\b(code|name|category|group|type|barcode|uom|unit|price|cost|description)\b/i', $headerVal)) {
-                    continue;
-                }
-
-                $map[$field] = $colIndex;
-                continue;
-            }
-
-            if (preg_match($pattern, $headerVal)) {
-                $map[$field] = $colIndex;
-            }
-        }
-    }
-
-    return $map;
+    return $newProductId;
 }
 
 function normalizeImportHeader($header)
@@ -648,6 +757,61 @@ function normalizeImportHeader($header)
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="import-box">
+                                <h3><i class="fa fa-database"></i> Database Tables Affected</h3>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered mb-0">
+                                        <thead style="background:#f8fafc;">
+                                            <tr>
+                                                <th>Table Name</th>
+                                                <th style="text-align:center;">Rows Inserted</th>
+                                                <th style="text-align:center;">Rows Updated</th>
+                                                <th style="text-align:center;">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $totalInserted = 0;
+                                            $totalUpdated = 0;
+                                            foreach ($uploadResults['table_operations'] as $table => $ops):
+                                                $inserted = (int)$ops['inserted'];
+                                                $updated = (int)($ops['updated'] ?? 0);
+                                                $total = $inserted + $updated;
+                                                $totalInserted += $inserted;
+                                                $totalUpdated += $updated;
+                                                if ($total > 0):
+                                            ?>
+                                                <tr>
+                                                    <td><strong><?php echo htmlspecialchars($table); ?></strong></td>
+                                                    <td style="text-align:center; color:#059669;"><strong><?php echo $inserted; ?></strong></td>
+                                                    <td style="text-align:center; color:#1d4ed8;"><strong><?php echo $updated; ?></strong></td>
+                                                    <td style="text-align:center; background:#f8fafc;"><strong><?php echo $total; ?></strong></td>
+                                                </tr>
+                                            <?php endif; endforeach; ?>
+                                            <tr style="background:#f0f9ff; font-weight:bold;">
+                                                <td>TOTAL</td>
+                                                <td style="text-align:center; color:#059669;"><?php echo $totalInserted; ?></td>
+                                                <td style="text-align:center; color:#1d4ed8;"><?php echo $totalUpdated; ?></td>
+                                                <td style="text-align:center; background:#e0f2fe;"><?php echo ($totalInserted + $totalUpdated); ?></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div style="margin-top:12px; padding:10px; background:#f0fdf4; border-radius:8px; border-left:4px solid #22c55e; font-size:13px;">
+                                    <i class="fa fa-info-circle" style="color:#15803d;"></i>
+                                    <strong style="color:#15803d;">Tables Modified:</strong>
+                                    <ul style="margin:6px 0 0 20px; padding:0;">
+                                        <li><strong>item_master:</strong> Stores product/item information</li>
+                                        <li><strong>batch_master:</strong> Tracks batch numbers and expiry dates</li>
+                                        <li><strong>fifo:</strong> Records stock transactions</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="import-box">
                                 <h3><i class="fa fa-list-alt"></i> Import Details</h3>
                                 <div class="table-responsive">
                                     <table class="table table-hover result-table mb-0">
@@ -657,6 +821,8 @@ function normalizeImportHeader($header)
                                                 <th>SKU</th>
                                                 <th>Product Name</th>
                                                 <th>Qty</th>
+                                                <th>Batch No</th>
+                                                <th>Expiry Date</th>
                                                 <th>Status</th>
                                                 <th>Details</th>
                                             </tr>
@@ -668,13 +834,15 @@ function normalizeImportHeader($header)
                                                     <td><strong><?php echo htmlspecialchars($row['sku']); ?></strong></td>
                                                     <td><?php echo htmlspecialchars($row['name'] ?? ''); ?></td>
                                                     <td><?php echo isset($row['qty']) ? number_format((float)$row['qty'], 2) : '-'; ?></td>
+                                                    <td><?php echo htmlspecialchars($row['batch'] ?? '-'); ?></td>
+                                                    <td><?php echo htmlspecialchars($row['expiry'] ?? '-'); ?></td>
                                                     <td>
                                                         <?php
                                                         $badgeMap = [
                                                             'created' => 'badge-created',
                                                             'updated' => 'badge-updated',
                                                             'skipped' => 'badge-skipped',
-                                                            'error' => 'badge-error-row',
+                                                            'error'   => 'badge-error-row',
                                                         ];
                                                         $badgeCls = $badgeMap[$row['status']] ?? 'badge-skipped';
                                                         ?>
@@ -700,7 +868,7 @@ function normalizeImportHeader($header)
                         <div class="row" style="margin-top:16px;">
                             <div class="col-lg-8">
                                 <div class="import-box">
-                                    <h3><i class="fa fa-file-excel-o"></i> Upload Stock Report</h3>
+                                    <h3><i class="fa fa-file-excel-o"></i> Upload Stock Report (Standard Template)</h3>
                                     <div class="upload-zone" id="uploadZone" onclick="document.getElementById('stockFile').click();">
                                         <i class="fa fa-cloud-upload"></i>
                                         <h4 style="color:#334155; margin:0 0 4px;">Drop Excel file here or click to browse</h4>
@@ -710,19 +878,23 @@ function normalizeImportHeader($header)
                                     <input type="file" name="stock_file" id="stockFile" accept=".xlsx,.xls" style="display:none;">
 
                                     <div style="margin-top:20px; background:#f0f9ff; border-radius:10px; padding:16px; border:1px solid #bfdbfe;">
-                                        <h5 style="margin:0 0 8px; color:#1e40af; font-size:13px;"><i class="fa fa-info-circle"></i> Expected Excel Columns</h5>
-                                        <p style="margin:0; color:#334155; font-size:13px; line-height:1.6;">
-                                            The system auto-detects columns by header name. Ensure your Excel has at least:
-                                        </p>
-                                        <ul style="margin:8px 0 0; padding-left:18px; color:#334155; font-size:13px; line-height:1.8;">
-                                            <li><strong>SKU / Item Code</strong> — (Required) matched against item_master</li>
-                                            <li><strong>Name / Description</strong> — used for new products</li>
-                                            <li><strong>Qty / Quantity / Stock</strong> — stock quantity to add</li>
-                                            <li><strong>Cost / Purchase Price</strong> — cost rate per unit</li>
-                                            <li><strong>Sell Price / Selling Price</strong> — selling price for new products</li>
-                                            <li><strong>UOM / Unit</strong> — unit of measure (default: EA)</li>
-                                            <li><strong>Barcode</strong> — optional barcode/EAN</li>
-                                        </ul>
+                                        <h5 style="margin:0 0 10px; color:#1e40af; font-size:13px;"><i class="fa fa-info-circle"></i> Required Template Column Order</h5>
+                                        <table class="table table-sm mb-0" style="font-size:12px;">
+                                            <thead><tr><th>Col</th><th>Header</th><th>Required?</th><th>Notes</th></tr></thead>
+                                            <tbody>
+                                                <tr><td>A</td><td>Product ID</td><td>Reference only</td><td>Imported product is resolved by Product Code (SKU)</td></tr>
+                                                <tr><td>B</td><td>Product Code</td><td><span style="color:red">&#10004; Required</span></td><td>Matched against existing SKUs</td></tr>
+                                                <tr><td>C</td><td>Product Name</td><td>Recommended</td><td>Used when creating new product</td></tr>
+                                                <tr><td>D</td><td>Group</td><td>Optional</td><td>Must match group name exactly</td></tr>
+                                                <tr><td>E</td><td>Type</td><td>Optional</td><td>Must match type name exactly</td></tr>
+                                                <tr><td>F</td><td>Category</td><td>Optional</td><td></td></tr>
+                                                <tr><td>G</td><td>Stock Qty</td><td><span style="color:red">&#10004; Required</span></td><td>Rows with 0 qty are skipped</td></tr>
+                                                <tr><td>H</td><td>Batch No</td><td>Optional</td><td>Auto-generated as IMP-YYYYMMDD if empty</td></tr>
+                                                <tr><td>I</td><td>Expiry Date</td><td>Optional</td><td>dd/mm/yyyy format</td></tr>
+                                                <tr><td>J</td><td>UOM</td><td>Optional</td><td>Default: EA</td></tr>
+                                                <tr><td>K</td><td>Additional UOM</td><td>Optional</td><td>e.g. 10 KG Box</td></tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -741,32 +913,9 @@ function normalizeImportHeader($header)
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
-                                        <div class="form-group">
-                                            <label>Default Group (for new products)</label>
-                                            <select name="default_group_id" class="form-control">
-                                                <option value="0">-- None --</option>
-                                                <?php foreach ($groups as $grp): ?>
-                                                    <option value="<?php echo (int)$grp['group_id']; ?>">
-                                                        <?php echo htmlspecialchars($grp['group_name']); ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Default Type (for new products)</label>
-                                            <select name="default_type_id" class="form-control">
-                                                <option value="0">-- None --</option>
-                                                <?php foreach ($types as $tp): ?>
-                                                    <option value="<?php echo (int)$tp['type_id']; ?>">
-                                                        <?php echo htmlspecialchars($tp['group_name'] . ' → ' . $tp['type_name']); ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Batch No. Prefix</label>
-                                            <input type="text" name="batch_prefix" class="form-control" value="IMP" placeholder="e.g. IMP, CUST, STK">
-                                            <small class="text-muted">Batch will be: PREFIX-YYYYMMDD-HHMMSS</small>
+                                        <div class="alert alert-info" style="border-radius:10px; font-size:12px; padding:10px 14px;">
+                                            <i class="fa fa-info-circle"></i>
+                                            <strong>Group, Type &amp; Batch No</strong> are read directly from the Excel template columns D, E &amp; H.
                                         </div>
                                         <hr>
                                         <button type="submit" name="import_stock" value="1" class="btn btn-primary btn-block" style="border-radius:10px; padding:12px; font-weight:700; font-size:15px;" id="btnImport" disabled>

@@ -42,7 +42,7 @@ class Service
         if (!in_array($host, $domainWhiteList, true)) {
             return ($cell === null) ? null : Functions::NOT_YET_IMPLEMENTED; // will be converted to oldCalculatedValue or null
         }
-        // Get results from the webservice
+        // Get results from the the webservice
         $ctxArray = [
             'http' => [
                 'user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
@@ -51,7 +51,6 @@ class Service
         if ($scheme === 'https') {
             $ctxArray['ssl'] = ['crypto_method' => STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT];
         }
-
         $ctx = stream_context_create($ctxArray);
         $output = @file_get_contents($url, false, $ctx);
         if ($output === false || mb_strlen($output) > 32767) {

@@ -133,7 +133,7 @@ class ChiSquared
             return ExcelError::NAN();
         }
 
-        $callback = fn ($value): float => 1 - (Gamma::incompleteGamma($degrees / 2, $value / 2)
+        $callback = fn (float $value): float => 1 - (Gamma::incompleteGamma($degrees / 2, $value / 2)
                     / Gamma::gammaValue($degrees / 2));
 
         $newtonRaphson = new NewtonRaphson($callback);

@@ -43,7 +43,7 @@ class Formatter extends BaseFormatter
         };
     }
 
-    /** @param float|int|numeric-string $value value to be formatted */
+    /** @param float|int|string $value value to be formatted */
     private static function splitFormatForSectionSelection(array $sections, mixed $value): array
     {
         // Extract the relevant section depending on whether number is positive, negative, or zero?
@@ -80,7 +80,7 @@ class Formatter extends BaseFormatter
         $absval = $value;
         switch ($sectionCount) {
             case 2:
-                $absval = abs($value + 0);
+                $absval = abs($value);
                 if (!self::splitFormatComparison($value, $conditionOperations[0], $conditionComparisonValues[0], '>=', 0)) {
                     $color = $colors[1];
                     $format = $sections[1];
@@ -89,7 +89,7 @@ class Formatter extends BaseFormatter
                 break;
             case 3:
             case 4:
-                $absval = abs($value + 0);
+                $absval = abs($value);
                 if (!self::splitFormatComparison($value, $conditionOperations[0], $conditionComparisonValues[0], '>', 0)) {
                     if (self::splitFormatComparison($value, $conditionOperations[1], $conditionComparisonValues[1], '<', 0)) {
                         $color = $colors[1];
@@ -109,18 +109,15 @@ class Formatter extends BaseFormatter
     /**
      * Convert a value in a pre-defined format to a PHP string.
      *
-     * @param null|array|bool|float|int|RichText|string $value Value to format
+     * @param null|bool|float|int|RichText|string $value Value to format
      * @param string $format Format code: see = self::FORMAT_* for predefined values;
      *                          or can be any valid MS Excel custom format string
-     * @param null|array|callable $callBack Callback function for additional formatting of string
+     * @param ?array $callBack Callback function for additional formatting of string
      *
      * @return string Formatted string
      */
-    public static function toFormattedString($value, string $format, null|array|callable $callBack = null): string
+    public static function toFormattedString($value, string $format, ?array $callBack = null): string
     {
-        while (is_array($value)) {
-            $value = array_shift($value);
-        }
         if (is_bool($value)) {
             return $value ? Calculation::getTRUE() : Calculation::getFALSE();
         }
@@ -129,7 +126,12 @@ class Formatter extends BaseFormatter
         $formatx = str_replace('\"', self::QUOTE_REPLACEMENT, $format);
         if (preg_match(self::SECTION_SPLIT, $format) === 0 && preg_match(self::SYMBOL_AT, $formatx) === 1) {
             if (!str_contains($format, '"')) {
-                return str_replace('@', $value, $format);
+                $temp = str_replace('@', "$value", $format);
+                if (is_callable($callBack)) {
+                    $temp = $callBack($temp, $format);
+                }
+
+                return $temp;
             }
             //escape any dollar signs on the string, so they are not replaced with an empty value
             $value = str_replace(
@@ -137,11 +139,16 @@ class Formatter extends BaseFormatter
                 ['\$', self::QUOTE_REPLACEMENT],
                 (string) $value
             );
+            $temp = preg_replace(self::SYMBOL_AT, $value, $formatx) ?? $value;
+            if (is_callable($callBack)) {
+                $temp = $callBack($temp, $formatx);
+            }
+            /** @var string $temp */
 
             return str_replace(
                 ['"', self::QUOTE_REPLACEMENT],
                 ['', '"'],
-                preg_replace(self::SYMBOL_AT, $value, $formatx) ?? $value
+                $temp
             );
         }
 
@@ -181,8 +188,6 @@ class Formatter extends BaseFormatter
         if (
             //  Check for date/time characters (not inside quotes)
             (preg_match('/(\[\$[A-Z]*-[0-9A-F]*\])*[hmsdy](?=(?:[^"]|"[^"]*")*$)/miu', $format))
-            //  Look out for Currency formats Issue 4124
-            && !(preg_match('/\[\$[A-Z]{3}\]/miu', $format))
             // A date/time with a decimal time shouldn't have a digit placeholder before the decimal point
             && (preg_match('/[0\?#]\.(?![^\[]*\])/miu', $format) === 0)
         ) {
@@ -200,8 +205,9 @@ class Formatter extends BaseFormatter
         }
 
         // Additional formatting provided by callback function
-        if (is_callable($callBack)) {
-            $value = $callBack($value, $colors);
+        if ($callBack !== null) {
+            [$writerInstance, $function] = $callBack;
+            $value = $writerInstance->$function($value, $colors);
         }
 
         return str_replace(chr(0x00), '.', $value);

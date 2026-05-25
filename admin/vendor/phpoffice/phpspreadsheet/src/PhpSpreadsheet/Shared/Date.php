@@ -537,16 +537,11 @@ class Date
         return $dtobj->format($format);
     }
 
-    /**
-     * Round the given DateTime object to seconds.
-     */
     public static function roundMicroseconds(DateTime $dti): void
     {
         $microseconds = (int) $dti->format('u');
-        $rounded = (int) round($microseconds, -6);
-        $modify = $rounded - $microseconds;
-        if ($modify !== 0) {
-            $dti->modify(($modify > 0 ? '+' : '') . $modify . ' microseconds');
+        if ($microseconds >= 500000) {
+            $dti->modify('+1 second');
         }
     }
 }

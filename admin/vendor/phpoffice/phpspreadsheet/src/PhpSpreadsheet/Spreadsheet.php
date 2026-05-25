@@ -4,7 +4,6 @@ namespace PhpOffice\PhpSpreadsheet;
 
 use JsonSerializable;
 use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
-use PhpOffice\PhpSpreadsheet\Cell\IValueBinder;
 use PhpOffice\PhpSpreadsheet\Document\Properties;
 use PhpOffice\PhpSpreadsheet\Document\Security;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -170,8 +169,6 @@ class Spreadsheet implements JsonSerializable
     private int $tabRatio = 600;
 
     private Theme $theme;
-
-    private ?IValueBinder $valueBinder = null;
 
     public function getTheme(): Theme
     {
@@ -524,15 +521,6 @@ class Spreadsheet implements JsonSerializable
     public function sheetNameExists(string $worksheetName): bool
     {
         return $this->getSheetByName($worksheetName) !== null;
-    }
-
-    public function duplicateWorksheetByTitle(string $title): Worksheet
-    {
-        $original = $this->getSheetByNameOrThrow($title);
-        $index = $this->getIndex($original) + 1;
-        $clone = clone $original;
-
-        return $this->addSheet($clone, $index, true);
     }
 
     /**
@@ -1087,11 +1075,6 @@ class Spreadsheet implements JsonSerializable
         return $this->cellXfCollection[$cellStyleIndex];
     }
 
-    public function getCellXfByIndexOrNull(?int $cellStyleIndex): ?Style
-    {
-        return ($cellStyleIndex === null) ? null : ($this->cellXfCollection[$cellStyleIndex] ?? null);
-    }
-
     /**
      * Get cellXf by hash code.
      *
@@ -1591,28 +1574,6 @@ class Spreadsheet implements JsonSerializable
     public function getExcelCalendar(): int
     {
         return $this->excelCalendar;
-    }
-
-    public function deleteLegacyDrawing(Worksheet $worksheet): void
-    {
-        unset($this->unparsedLoadedData['sheets'][$worksheet->getCodeName()]['legacyDrawing']);
-    }
-
-    public function getLegacyDrawing(Worksheet $worksheet): ?string
-    {
-        return $this->unparsedLoadedData['sheets'][$worksheet->getCodeName()]['legacyDrawing'] ?? null;
-    }
-
-    public function getValueBinder(): ?IValueBinder
-    {
-        return $this->valueBinder;
-    }
-
-    public function setValueBinder(?IValueBinder $valueBinder): self
-    {
-        $this->valueBinder = $valueBinder;
-
-        return $this;
     }
 
     /** @var string[] */
