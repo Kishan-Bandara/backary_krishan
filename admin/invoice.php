@@ -136,8 +136,11 @@ if(isset($_GET['id']))
                 $customer_name = $query_customer_id['customer_name'];
                 $customer_address = $query_customer_id['customer_address'];
                 $customer_tell = $query_customer_id['customer_tell'];
+                $customer_email = $query_customer_id['customer_email'] ?? '';
+                if (empty($customer_tell)) {
+                    $customer_tell = $query_customer_id['customer_mobile'] ?? '';
+                }
                 $customer_No = "";
-                $customer_email = "";
 
             }
 
@@ -316,11 +319,11 @@ try {
          <div class="col-lg-12 col-md-12 col-sm-12">
              <hr>
             <p style="text-align:left;"> <span style="font-size: 14px; padding: 0px 50px 0px 50px;">
-                 <strong>Email : </strong>  bsdshehanfer@gmail.com
+                 <strong>Email : </strong>  <?php echo htmlspecialchars($customer_email ?: '-'); ?>
              </span>
              
               <span >
-              <strong>Contact us : </strong>  +39 327 823 7191
+              <strong>Contact us : </strong>  <?php echo htmlspecialchars($customer_tell ?: '-'); ?>
              </span> </p>
              <hr>
          </div>
